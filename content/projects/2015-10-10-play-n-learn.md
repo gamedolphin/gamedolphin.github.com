@@ -2,6 +2,7 @@
 title: "Play n Learn"
 taxonomies:
   tags: ["game"]
+path: "/play-n-learn"
 ---
 
 <center><img src="/images/grover.jpg"/></center>

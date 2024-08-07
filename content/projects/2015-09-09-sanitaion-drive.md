@@ -2,6 +2,7 @@
 title: "Sanitation Drive"
 taxonomies: 
   tags: ["game"]
+path: "/sanitaion-drive"
 ---
 
 <center><img src="/images/slipper.png"/></center>

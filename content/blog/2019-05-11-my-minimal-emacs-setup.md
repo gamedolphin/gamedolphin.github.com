@@ -2,6 +2,7 @@
 title: "My Minimal Emacs Setup"
 taxonomies:
   tags: ["emacs"]
+path: "/my-minimal-emacs-setup"
 ---
 
 ## Basic Setup

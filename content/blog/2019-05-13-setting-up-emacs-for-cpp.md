@@ -2,6 +2,7 @@
 title: "Emacs setup for C++"
 taxonomies:
   tags: ["emacs", "c++"]
+path: "/setting-up-emacs-for-cpp"
 ---
 
 For C++ development, I use a combination of [emacs-lsp](https://github.com/emacs-lsp/lsp-mode) along with [ccls](https://github.com/MaskRay/ccls). Emacs-lsp is a client for [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) which, in Microsoft's words:-

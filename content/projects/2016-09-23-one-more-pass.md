@@ -2,6 +2,7 @@
 title: "One More Pass"
 taxonomies:
   tags: ["game"]
+path: "/one-more-pass"
 ---
 
 <center><img src="/images/omp2.jpg"/></center>

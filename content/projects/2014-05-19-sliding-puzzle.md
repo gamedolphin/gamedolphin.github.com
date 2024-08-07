@@ -2,6 +2,7 @@
 title: "Phaser HTML5 Games"
 taxonomies:
   tags: ["game"]
+path: "/sliding-puzzle"
 ---
 
 I built a bunch of javascript games while learning the phaser framework. Some of them are open source now.

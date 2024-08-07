@@ -2,6 +2,7 @@
 title: "The Key App"
 taxonomies:
   tags: ["app"]
+path: "/the-key-app"
 ---
 
 <center><img src="/images/thekey1.jpg"/></center>

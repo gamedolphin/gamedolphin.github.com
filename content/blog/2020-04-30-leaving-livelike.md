@@ -2,6 +2,7 @@
 title: "An update - Leaving Livelike"
 taxonomies:
   tags: ["career", "livelike", "unity", "gamedev", "vr"]
+path: "/leaving-livelike"
 
 ---
 

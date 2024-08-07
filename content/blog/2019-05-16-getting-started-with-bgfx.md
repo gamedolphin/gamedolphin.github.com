@@ -2,6 +2,7 @@
 title: "Using the bgfx library with C++ on Ubuntu"
 taxonomies:
   tags: ["bgfx","c++","3d","renderer","opengl"]
+path: "/getting-started-with-bgfx"
 ---
 
 ## Bgfx - what is it?

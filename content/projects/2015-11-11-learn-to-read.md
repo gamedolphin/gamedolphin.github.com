@@ -2,6 +2,7 @@
 title: "Learn To Read, Read To Learn"
 taxonomies:
   tags: ["app","game"]
+path: "/learn-to-read"
 ---
 
 <center><img src="/images/readtolearn.jpg"/></center>

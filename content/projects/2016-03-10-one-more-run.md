@@ -2,6 +2,7 @@
 title: "One More Run"
 taxonomies:
   tags: ["game"]
+path: "/one-more-run"
 ---
 
 <center><img src="/images/omr2.png"/></center>

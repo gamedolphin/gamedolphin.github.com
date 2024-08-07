@@ -2,6 +2,7 @@
 title: "This for That"
 taxonomies:
   tags: ["app"]
+path: "/this-for-that"
 ---
 
 <center><img src="/images/tft.png"/></center>
