@@ -1,0 +1,117 @@
+@import "../themes/no-style-please/sass/style.scss";
+
+body[theme="dark"] {
+    filter: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    body[theme="auto"] {
+        filter: none;
+    }
+
+    body[theme="auto"] img {
+        filter: none;
+    }
+}
+
+html, body { background: #2e3440; };
+
+body {
+    color: #d8dee9;
+    font-family: "Iosevka";
+    font-size: 18px;  
+};
+
+blockquote {
+    background-color: #3b4252;
+    border-color: transparent;
+}
+
+*:target { background: #88c0d0; }
+
+table, th, td {
+    border: thin solid #2e3440;
+    border-collapse: collapse;
+    padding: 0.4rem;
+}
+
+code {
+    font-size: 16px;
+    background: #434c5e;
+}
+
+a {
+    color: #88c0d0;
+}
+
+.footnote-definition {
+    padding: 0 1rem;
+    &:target {
+        background: #88c0d0;
+        color: #212121;
+    }
+    p {
+        display: inline;
+    }
+}
+
+img {
+    border-radius: 10px;
+}
+
+iframe {
+    border-radius: 10px;
+}
+
+.resume-img {
+    display: none;
+}
+
+.print-me {
+    background: none!important;
+    border: none;
+    padding: 0!important;
+    /*optional*/    
+    /*input has OS specific font-family*/
+    color: #fff;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+@media print {
+    header { display: none; }
+    * { background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important;
+        -ms-filter: none !important; } /* Black prints faster: sanbeiji.com/archives/953 */
+    p a { color: #444 !important; text-decoration: underline; }        
+    pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
+    thead { display: table-header-group; } /* css-discuss.incutio.com/wiki/Printing_Tables */
+    tr, img { page-break-inside: avoid; }
+    @page { margin: 0.5cm; }
+    p, h2, h3 { orphans: 3; widows: 3; margin: 0px; font-size: 1rem; }
+    p em { font-size: 1.1rem; }
+    h2, h3{ page-break-after: avoid; }
+    * { margin-block: 0px; }    
+    h2 { font-size: 1.4rem; margin-top: 0.8rem; }
+    h3 { font-size: 1.2rem; margin-top: 0.5rem; }
+    section a{ }
+
+    .w { padding: 2rem 2rem; }
+
+    .resume-img {
+        display: block;
+        border-radius: 50%;
+        height: 8rem;
+        width: 8rem;
+        position: absolute;
+        right: 8rem;
+        top: 3rem;
+
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1);
+    }
+
+    .noPrint{
+        display:none;
+    }
+}
