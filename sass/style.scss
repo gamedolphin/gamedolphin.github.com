@@ -14,7 +14,7 @@ body[theme="dark"] {
     }
 }
 
-html, body { background: #2e3440; };
+html, body { background: #2e3440; position: relative; };
 
 body {
     color: #d8dee9;
@@ -79,6 +79,13 @@ iframe {
     font-size: 18px;
 }
 
+footer {
+    position: absolute;
+    font-size: 10px;
+    right: 8px;
+    bottom: 8px;
+}
+
 @media print {
     header { display: none; }
     * { background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important;
@@ -113,5 +120,9 @@ iframe {
 
     .noPrint{
         display:none;
+    }
+
+    footer {
+        display: none;
     }
 }

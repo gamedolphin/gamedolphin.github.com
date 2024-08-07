@@ -13,7 +13,7 @@ compile_sass = true
 build_search_index = true
 
 taxonomies = [
-    { name = "tags" }    
+    { name = "tags" }
 ]
 
 [markdown]
@@ -23,11 +23,6 @@ highlight_code = true
 highlight_theme = "nord"
 
 [extra]
-# Put all your custom variables here
-# header_nav = [
-#     { name = "~home", url = "/" },
-    # { name = "#tags", url = "/tags" },
-    # { name = "+categories", url = "/categories" },
-    # { name = "@contexts", url = "/contexts" },
-    # { name = "example", url = "http://example.com", new_tab=true },
-# ]
+footer_nav = [
+    { name = "Analytics", url = "https://calculating-cat.pikapod.net/share/uOgHMhM18K3kAuga/www.sandeepnambiar.com" }
+]
