@@ -8,4 +8,5 @@
     - [email](mailto:contact@sandeepnambiar.com)
 - [blog](./blog)
 - [projects](./projects)
+- [my setup](./my-setup)
 - [resume](./resume)
