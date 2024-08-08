@@ -26,8 +26,13 @@ zola serve
 ```
 
 ## Version History
-
-* 0.0
+* 1.1.0
+    * My personal setup and this website described in a small post.
+* 1.0.0 - 1.0.5
+    * Fixing github deployment.
+    * Font fixes.
+    * Size optimizations.
+* 0.0.0
     * Initial porting of the website.
 
 ## License
