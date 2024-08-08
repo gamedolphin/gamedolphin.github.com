@@ -1,5 +1,7 @@
 # Personal Website 
 
+![Github Deploy Status](https://github.com/gamedolphin/gamedolphin.github.com/actions/workflows/deploy.yaml/badge.svg)
+
 This repository contains the source for my [personal website](https://www.sandeepnambiar.com).
 
 The content has been ported from the old jekyll repository found [here](https://www.github.com/gamedolphin/gamedolphin.old.github.com).
