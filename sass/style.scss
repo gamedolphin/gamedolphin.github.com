@@ -18,8 +18,8 @@ html, body { background: #2e3440; position: relative; };
 
 body {
     color: #d8dee9;
-    font-family: "Iosevka";
-    font-size: 18px;  
+    font-family: "Iosevka Aile Iaso", sans-serif;
+    font-size: 16px;
 };
 
 blockquote {
@@ -35,8 +35,9 @@ table, th, td {
     padding: 0.4rem;
 }
 
-code {
-    font-size: 16px;
+code, pre {
+    font-family: "Iosevka Curly Iaso", monospace;
+    font-size: 14px;
     background: #434c5e;
 }
 
