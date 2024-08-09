@@ -1,0 +1,23 @@
+{% extends "no-style-please/templates/page.html" %}
+
+{% block footer %}
+{{ super() }}
+  {% if page.extra.comments %}
+  <script src="https://giscus.app/client.js"
+        data-repo="gamedolphin/gamedolphin.github.com"
+        data-repo-id="R_kgDOMgpr2g"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOMgpr2s4ChgX6"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="noborder_gray"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+  </script>
+  {% endif %}
+{% endblock footer %}

@@ -1,4 +1,6 @@
 ---
+extra:
+  comments: true
 ---
 ## Website
 This website is built using [zola](https://www.getzola.org). The theme is [no-style-please](https://atgumx.gitlab.io/no-style-please/). The fonts are [iosevka](https://github.com/be5invis/Iosevka) variants. The colors are from the [nord palette](https://www.nordtheme.com/docs/colors-and-palettes).

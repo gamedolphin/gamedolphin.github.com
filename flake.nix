@@ -19,8 +19,7 @@
             buildInputs = [
               nil
               zola
-              nodejs
-              resumed
+              pandoc
             ];
           };
         });
