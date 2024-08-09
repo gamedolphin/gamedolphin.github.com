@@ -28,6 +28,8 @@ zola serve
 ```
 
 ## Version History
+* 2.0.0
+    * Gisqus driven comments now live on the website.
 * 1.1.0
     * My personal setup and this website described in a small post.
 * 1.0.0 - 1.0.5
