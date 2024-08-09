@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+Allow: /
+Sitemap: https://www.sandeepnambiar.com/sitemap.xml
