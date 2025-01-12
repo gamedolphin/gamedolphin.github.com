@@ -5,7 +5,7 @@ extra:
 ## Website
 This website is built using [zola](https://www.getzola.org). The theme is [no-style-please](https://atgumx.gitlab.io/no-style-please/). The fonts are [iosevka](https://github.com/be5invis/Iosevka) variants. The colors are from the [nord palette](https://www.nordtheme.com/docs/colors-and-palettes).
 
-On push to master to this [repository](https://github.com/gamedolphin/gamedolphin.github.com/), github actions trigger a zola build and push to the `gh-pages` branch. That branch name is special, because it then triggers a github pages deploy action to this website. 
+On push to master to this [repository](https://github.com/gamedolphin/gamedolphin.github.com/), github actions trigger a zola build and push to the `gh-pages` branch. That branch name is special, because it then triggers a github pages deploy action to this website.
 
 The iosevka font is trimmed down to about 12Kb using python font tools (inspired by [Xe](https://xeiaso.net/blog/iaso-fonts/)).
 
@@ -24,13 +24,13 @@ Most of my work and play happens on the following system :-
 
 ### Software
 
-As you might have noticed, I run Nixos and you can find my configuration in this [repository](https://github.com/gamedolphin/.nixos).
+As you might have noticed, I run Nixos and you can find my configuration in this [repository](https://github.com/gamedolphin/system).
 
-I also exclusively use [emacs](https://www.gnu.org/software/emacs/) and my emacs [config](https://github.com/gamedolphin/.nixos/tree/master/emacs) is now part of the nixos setup. 
+I also exclusively use [emacs](https://www.gnu.org/software/emacs/) and my emacs [config](https://github.com/gamedolphin/system/tree/master/home/emacs) is now part of the nixos setup.
 
-All the other computers that I use (office workstation, laptop) also conventiently share the same configuration so all my workstations have the same consistent experience, always. 
+All the other computers that I use (office workstation, laptop) also conventiently share the same configuration so all my workstations have the same consistent experience, always.
 
-This website shares my emacs theme as well as my desktop theme. These colors form the majority of almost all my computer interactions. 
+This website shares my emacs theme as well as my desktop theme. These colors form the majority of almost all my computer interactions.
 
 ### Hardware
 
