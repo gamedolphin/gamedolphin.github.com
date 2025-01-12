@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+        <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
+        <meta content="width=device-width, initial-scale=1" name="viewport"/>
+
+        
+        
+        
+
+        
+
+        
+        
+        
+
+        
+
+        
+        
+        
+
+        <title>My Minimal Emacs Setup</title>
+        
+        <meta name="title" content="My Minimal Emacs Setup">
+        
+        <meta name="description" content="Sandeep Nambiar&#x27;s personal website">
+        <meta name="generator" content="Zola v0.16.1">
+
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://www.sandeepnambiar.com/my-minimal-emacs-setup/">
+        <meta property="og:site_name" content="Sandeep Nambiar">
+        <meta property="og:title" content="My Minimal Emacs Setup">
+        <meta property="og:description" content="Sandeep Nambiar&#x27;s personal website">
+        
+
+        
+        
+        <meta property="twitter:card" content="summary_large_image">
+        <meta property="twitter:url" content="https://www.sandeepnambiar.com/my-minimal-emacs-setup/">
+        <meta property="twitter:title" content="My Minimal Emacs Setup">
+        <meta property="twitter:description" content="Sandeep Nambiar&#x27;s personal website">
+        
+        
+        
+        <link rel="canonical" href="https://www.sandeepnambiar.com/my-minimal-emacs-setup/">
+        
+        <script type="application/ld+json">
+            {
+                "description":"Sandeep Nambiar's personal website",
+                "url":"https://www.sandeepnambiar.com/my-minimal-emacs-setup/",
+                "@type":"WebSite",
+                "headline":"My Minimal Emacs Setup",
+                "name":"My Minimal Emacs Setup",
+                
+                "@context":"https://schema.org"
+            }
+        </script>
+        
+        
+        
+
+        <link rel="stylesheet" href="https://www.sandeepnambiar.com/style.css"/>
+        
+<script defer src="https://calculating-cat.pikapod.net/script.js" data-website-id="e274bd34-543a-448b-aead-5e91046e37b0"></script>
+
+    </head>
+    <body theme="auto">
+        <div class="w">
+            <header>
+                
+                
+<p><a href="..">..</a>/my-minimal-emacs-setup</p>
+<p class="post-meta"><time datetime="2019-05-11">2019-05-11</time></p>
+<h1>My Minimal Emacs Setup</h1>
+
+            </header>
+            <main class="page-content" aria-label="Content">
+                
+
+
+
+<h2 id="basic-setup">Basic Setup</h2>
+<p>I begin by telling Emacs what my name and email address is. This is used by tools like git when creating commits.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">setq</span><span> user</span><span style="color:#81a1c1;">-</span><span>full</span><span style="color:#81a1c1;">-</span><span>name </span><span style="color:#a3be8c;">&quot;Sandeep Nambiar&quot;
+</span><span>      user</span><span style="color:#81a1c1;">-</span><span>mail</span><span style="color:#81a1c1;">-</span><span>address </span><span style="color:#a3be8c;">&quot;contact@sandeepnambiar.com&quot;</span><span>)
+</span></code></pre>
+<p>Garbage collection in Emacs is quite simple. Every time memory crosses a certain threshold, it garbage collects. But the default value for this threshold is quite low by modern standards, just 800KB. Most extensions of Emacs use considerably more memory than that and this low threshold makes Emacs quite slow when using them. I set it something more reasonable like 50MB. Another low threshold is hit when opening files with sizes that are common nowadays and Emacs warns you about being wary of opening such a large file. I increase that limit too. I have RAM to spare.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">setq</span><span> gc</span><span style="color:#81a1c1;">-</span><span style="color:#88c0d0;">cons</span><span style="color:#81a1c1;">-</span><span>threshold </span><span style="color:#b48ead;">50000000</span><span>)
+</span><span>(</span><span style="color:#88c0d0;">setq</span><span> large</span><span style="color:#81a1c1;">-</span><span>file</span><span style="color:#81a1c1;">-</span><span>warning</span><span style="color:#81a1c1;">-</span><span>threshold </span><span style="color:#b48ead;">100000000</span><span>)
+</span></code></pre>
+<p>Everything needs to be UTF-8. I have to be careful when opening files from sources other than my systems but in general, UTF-8 is preferred everywhere.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(prefer</span><span style="color:#81a1c1;">-</span><span>coding</span><span style="color:#81a1c1;">-</span><span>system &#39;utf</span><span style="color:#81a1c1;">-</span><span style="color:#b48ead;">8</span><span>)
+</span><span>(</span><span style="color:#88c0d0;">set</span><span style="color:#81a1c1;">-</span><span>default</span><span style="color:#81a1c1;">-</span><span>coding</span><span style="color:#81a1c1;">-</span><span>systems &#39;utf</span><span style="color:#81a1c1;">-</span><span style="color:#b48ead;">8</span><span>)
+</span><span>(</span><span style="color:#88c0d0;">set</span><span style="color:#81a1c1;">-</span><span>terminal</span><span style="color:#81a1c1;">-</span><span>coding</span><span style="color:#81a1c1;">-</span><span>system &#39;utf</span><span style="color:#81a1c1;">-</span><span style="color:#b48ead;">8</span><span>)
+</span><span>(</span><span style="color:#88c0d0;">set</span><span style="color:#81a1c1;">-</span><span>keyboard</span><span style="color:#81a1c1;">-</span><span>coding</span><span style="color:#81a1c1;">-</span><span>system &#39;utf</span><span style="color:#81a1c1;">-</span><span style="color:#b48ead;">8</span><span>)
+</span></code></pre>
+<blockquote>
+<p><a href="https://www.reddit.com/r/emacs/comments/bnwajk/my_minimal_emacs_config/enayfv7?utm_source=share&amp;utm_medium=web2x">eli-zaretskii</a> :  If your system's locale specifies UTF-8, these settings are redundant, as Emacs does that by default. And if your system's locale is not UTF-8, you will get yourself in trouble, e.g., by assuming that your keyboard talks UTF-8.</p>
+</blockquote>
+<h2 id="setup-package-manager-and-use-package">Setup package manager and use-package</h2>
+<p>Emacs becomes truly useful with its package manager and thousands of freely available packages from its wonderful community. Use-package is a utility library that lets us declaratively setup the packages we will be using.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">require</span><span> &#39;package)
+</span><span>(</span><span style="color:#88c0d0;">setq</span><span> package</span><span style="color:#81a1c1;">-</span><span>enable</span><span style="color:#81a1c1;">-</span><span>at</span><span style="color:#81a1c1;">-</span><span>startup </span><span style="color:#81a1c1;">nil</span><span>)
+</span><span>(add</span><span style="color:#81a1c1;">-to-</span><span style="color:#88c0d0;">list</span><span> &#39;package</span><span style="color:#81a1c1;">-</span><span>archives &#39;(</span><span style="color:#a3be8c;">&quot;melpa&quot;</span><span> . </span><span style="color:#a3be8c;">&quot;http://melpa.org/packages/&quot;</span><span>))
+</span><span>(add</span><span style="color:#81a1c1;">-to-</span><span style="color:#88c0d0;">list</span><span> &#39;package</span><span style="color:#81a1c1;">-</span><span>archives &#39;(</span><span style="color:#a3be8c;">&quot;gnu&quot;</span><span> . </span><span style="color:#a3be8c;">&quot;http://elpa.gnu.org/packages/&quot;</span><span>))
+</span><span>(package</span><span style="color:#81a1c1;">-</span><span>initialize)
+</span><span>
+</span><span>(</span><span style="color:#81a1c1;">unless </span><span>(package</span><span style="color:#81a1c1;">-</span><span>installed</span><span style="color:#81a1c1;">-</span><span>p &#39;</span><span style="color:#88c0d0;">use-package</span><span>)
+</span><span>  (package</span><span style="color:#81a1c1;">-</span><span>refresh</span><span style="color:#81a1c1;">-</span><span>contents)
+</span><span>  (package</span><span style="color:#81a1c1;">-</span><span>install &#39;</span><span style="color:#88c0d0;">use-package</span><span>))
+</span><span>
+</span><span>(</span><span style="color:#88c0d0;">eval</span><span style="color:#81a1c1;">-when-</span><span style="color:#88c0d0;">compile
+</span><span>  (</span><span style="color:#88c0d0;">require</span><span> &#39;</span><span style="color:#88c0d0;">use-package</span><span>))
+</span></code></pre>
+<h2 id="visual-setup">Visual Setup</h2>
+<p>Visual defaults for Emacs have a menu bar, scroll bars on all buffers and a toolbar as well. But most functionality can and should be reached through just keyboard commands, which means most of this is just visual clutter. I like a clean Emacs look so I get rid of the menu bar, the tool bar, the blinking cursor and the scroll bar.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(menu</span><span style="color:#81a1c1;">-</span><span>bar</span><span style="color:#81a1c1;">-</span><span>mode </span><span style="color:#81a1c1;">-</span><span style="color:#b48ead;">1</span><span>)
+</span><span>(toggle</span><span style="color:#81a1c1;">-</span><span>scroll</span><span style="color:#81a1c1;">-</span><span>bar </span><span style="color:#81a1c1;">-</span><span style="color:#b48ead;">1</span><span>)
+</span><span>(tool</span><span style="color:#81a1c1;">-</span><span>bar</span><span style="color:#81a1c1;">-</span><span>mode </span><span style="color:#81a1c1;">-</span><span style="color:#b48ead;">1</span><span>)
+</span><span>(blink</span><span style="color:#81a1c1;">-</span><span>cursor</span><span style="color:#81a1c1;">-</span><span>mode </span><span style="color:#81a1c1;">-</span><span style="color:#b48ead;">1</span><span>)
+</span></code></pre>
+<p>Next I enable a bunch of visual helpers like line numbers, current line highlighting, column number and file size in the mode line.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(global</span><span style="color:#81a1c1;">-</span><span>hl</span><span style="color:#81a1c1;">-</span><span>line</span><span style="color:#81a1c1;">-</span><span>mode </span><span style="color:#81a1c1;">+</span><span style="color:#b48ead;">1</span><span>)
+</span><span>(line</span><span style="color:#81a1c1;">-</span><span>number</span><span style="color:#81a1c1;">-</span><span>mode </span><span style="color:#81a1c1;">+</span><span style="color:#b48ead;">1</span><span>)
+</span><span>(global</span><span style="color:#81a1c1;">-</span><span>display</span><span style="color:#81a1c1;">-</span><span>line</span><span style="color:#81a1c1;">-</span><span>numbers</span><span style="color:#81a1c1;">-</span><span>mode </span><span style="color:#b48ead;">1</span><span>)
+</span><span>(column</span><span style="color:#81a1c1;">-</span><span>number</span><span style="color:#81a1c1;">-</span><span>mode </span><span style="color:#81a1c1;">t</span><span>)
+</span><span>(size</span><span style="color:#81a1c1;">-</span><span>indication</span><span style="color:#81a1c1;">-</span><span>mode </span><span style="color:#81a1c1;">t</span><span>)
+</span></code></pre>
+<p>I never use the startup Emacs screen anymore so I disable that as well. This leads Emacs to load up with the <em>scratch</em> buffer open.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">setq</span><span> inhibit</span><span style="color:#81a1c1;">-</span><span>startup</span><span style="color:#81a1c1;">-</span><span>screen </span><span style="color:#81a1c1;">t</span><span>)
+</span></code></pre>
+<p>The model-line has the current file's name but the path to the current file is still a few keystrokes away. The title bar can be used to show the full path of the current file, so lets set that up.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">setq</span><span> frame</span><span style="color:#81a1c1;">-</span><span>title</span><span style="color:#81a1c1;">-</span><span style="color:#88c0d0;">format
+</span><span>      &#39;((:</span><span style="color:#88c0d0;">eval </span><span>(</span><span style="color:#81a1c1;">if </span><span>(buffer</span><span style="color:#81a1c1;">-</span><span>file</span><span style="color:#81a1c1;">-</span><span>name)
+</span><span>       (abbreviate</span><span style="color:#81a1c1;">-</span><span>file</span><span style="color:#81a1c1;">-</span><span>name (buffer</span><span style="color:#81a1c1;">-</span><span>file</span><span style="color:#81a1c1;">-</span><span>name))
+</span><span>       </span><span style="color:#a3be8c;">&quot;%b&quot;</span><span>))))
+</span></code></pre>
+<p>Default scrolling has some wierd quirks in Emacs, so I set margins that trigger scroll to zero and preserve screen position when jumping around.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">setq</span><span> scroll</span><span style="color:#81a1c1;">-</span><span>margin </span><span style="color:#b48ead;">0
+</span><span>      scroll</span><span style="color:#81a1c1;">-</span><span>conservatively </span><span style="color:#b48ead;">100000
+</span><span>      scroll</span><span style="color:#81a1c1;">-</span><span>preserve</span><span style="color:#81a1c1;">-</span><span>screen</span><span style="color:#81a1c1;">-</span><span style="color:#88c0d0;">position </span><span style="color:#b48ead;">1</span><span>)
+</span></code></pre>
+<p>I use the font &quot;Hack&quot; which you can find at this <a href="https://sourcefoundry.org/hack/">link</a> and set that to be the frame font. I am still trying to figure out a way to setup font size that works on different screen resolutions but for now it is set to 12.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">set</span><span style="color:#81a1c1;">-</span><span>frame</span><span style="color:#81a1c1;">-</span><span>font </span><span style="color:#a3be8c;">&quot;Hack 12&quot; </span><span style="color:#81a1c1;">nil t</span><span>)
+</span></code></pre>
+<p>One of the things I liked about Visual Studio Code editor was the default theme. Fortunately there's an Emacs package for it. Doom-one is my go to modern minimal theme. We also disable the default warning audio bell and replace it with a visual &quot;bell&quot; where only the mode-line flashes to warn you about something.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">use-package</span><span> doom</span><span style="color:#81a1c1;">-</span><span>themes
+</span><span>  :ensure </span><span style="color:#81a1c1;">t
+</span><span>  :config
+</span><span>  (</span><span style="color:#88c0d0;">load</span><span style="color:#81a1c1;">-</span><span>theme &#39;doom</span><span style="color:#81a1c1;">-</span><span>one </span><span style="color:#81a1c1;">t</span><span>)
+</span><span>  (doom</span><span style="color:#81a1c1;">-</span><span>themes</span><span style="color:#81a1c1;">-</span><span>visual</span><span style="color:#81a1c1;">-</span><span>bell</span><span style="color:#81a1c1;">-</span><span>config))
+</span></code></pre>
+<p>Smart mode line is a sexy mode line for Emacs. I also like the powerline theme for the mode line. The other option is Spaceline, the mode line from spacemacs, but I think it is more work to set that up.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">use-package</span><span> smart</span><span style="color:#81a1c1;">-</span><span>mode</span><span style="color:#81a1c1;">-</span><span>line</span><span style="color:#81a1c1;">-</span><span>powerline</span><span style="color:#81a1c1;">-</span><span>theme
+</span><span>  :ensure </span><span style="color:#81a1c1;">t</span><span>)
+</span><span>
+</span><span>(</span><span style="color:#88c0d0;">use-package</span><span> smart</span><span style="color:#81a1c1;">-</span><span>mode</span><span style="color:#81a1c1;">-</span><span>line
+</span><span>  :ensure </span><span style="color:#81a1c1;">t
+</span><span>  :config
+</span><span>  (</span><span style="color:#88c0d0;">setq</span><span> sml</span><span style="color:#81a1c1;">/</span><span>theme &#39;powerline)
+</span><span>  (add</span><span style="color:#81a1c1;">-</span><span>hook &#39;after</span><span style="color:#81a1c1;">-</span><span>init</span><span style="color:#81a1c1;">-</span><span>hook &#39;sml</span><span style="color:#81a1c1;">/</span><span>setup))
+</span></code></pre>
+<h2 id="backups">Backups</h2>
+<p>Emacs likes to strew its backup and temporary files everywhere. Lets give them a home in the temporary file directory.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">setq</span><span> backup</span><span style="color:#81a1c1;">-</span><span style="color:#88c0d0;">directory</span><span style="color:#81a1c1;">-</span><span>alist
+</span><span>      `((</span><span style="color:#a3be8c;">&quot;.*&quot;</span><span> . ,temporary</span><span style="color:#81a1c1;">-</span><span>file</span><span style="color:#81a1c1;">-</span><span style="color:#88c0d0;">directory</span><span>)))
+</span><span>(</span><span style="color:#88c0d0;">setq</span><span> auto</span><span style="color:#81a1c1;">-</span><span>save</span><span style="color:#81a1c1;">-</span><span>file</span><span style="color:#81a1c1;">-</span><span>name</span><span style="color:#81a1c1;">-</span><span>transforms
+</span><span>      `((</span><span style="color:#a3be8c;">&quot;.*&quot;</span><span> ,temporary</span><span style="color:#81a1c1;">-</span><span>file</span><span style="color:#81a1c1;">-</span><span style="color:#88c0d0;">directory </span><span style="color:#81a1c1;">t</span><span>)))
+</span></code></pre>
+<h2 id="ease-of-life">Ease of life</h2>
+<p>You can get fairly tired by typing a full &quot;yes&quot; or &quot;no&quot; to Emacs' questions. So I replaced that with a simple &quot;y&quot; or &quot;n&quot;</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(fset &#39;</span><span style="color:#88c0d0;">yes-or-no-p</span><span> &#39;</span><span style="color:#88c0d0;">y-or-n-p</span><span>)
+</span></code></pre>
+<p>If I edit a file outside of Emacs, the default setting is for Emacs to ask you to reload the file manually. I task Emacs to reload the file automatically.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(global</span><span style="color:#81a1c1;">-</span><span>auto</span><span style="color:#81a1c1;">-</span><span>revert</span><span style="color:#81a1c1;">-</span><span>mode </span><span style="color:#81a1c1;">t</span><span>)
+</span></code></pre>
+<p>Tabs are 4 spaces.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">setq</span><span style="color:#81a1c1;">-</span><span>default tab</span><span style="color:#81a1c1;">-</span><span>width </span><span style="color:#b48ead;">4
+</span><span>              indent</span><span style="color:#81a1c1;">-</span><span>tabs</span><span style="color:#81a1c1;">-</span><span>mode </span><span style="color:#81a1c1;">nil</span><span>)
+</span></code></pre>
+<p>When I say kill a buffer (close a file), Emacs asks which one. I'd rather it kill the current buffer I am in.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(global</span><span style="color:#81a1c1;">-</span><span style="color:#88c0d0;">set</span><span style="color:#81a1c1;">-</span><span>key (kbd </span><span style="color:#a3be8c;">&quot;C-x k&quot;</span><span>) &#39;kill</span><span style="color:#81a1c1;">-</span><span>this</span><span style="color:#81a1c1;">-</span><span>buffer)
+</span></code></pre>
+<p>Accidental whitespaces are annoying. And I let Emacs know it. So it cleans up behind me when I save a file.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(add</span><span style="color:#81a1c1;">-</span><span>hook &#39;before</span><span style="color:#81a1c1;">-</span><span>save</span><span style="color:#81a1c1;">-</span><span>hook &#39;whitespace</span><span style="color:#81a1c1;">-</span><span>cleanup)
+</span></code></pre>
+<p>Diminish lets you hide minor modes from showing in the mode line, keeping it minimal.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">use-package</span><span> diminish
+</span><span>  :ensure </span><span style="color:#81a1c1;">t</span><span>)
+</span></code></pre>
+<p>Smartparens is a minor-mode for dealing with paren pairs in Emacs. It inserts them in pairs, deletes them in pairs, highlights them and generally makes life easier when dealing with braces, quotes and the like.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">use-package</span><span> smartparens
+</span><span>  :ensure </span><span style="color:#81a1c1;">t
+</span><span>  :diminish smartparens</span><span style="color:#81a1c1;">-</span><span>mode
+</span><span>  :config
+</span><span>  (</span><span style="color:#88c0d0;">progn
+</span><span>    (</span><span style="color:#88c0d0;">require</span><span> &#39;smartparens</span><span style="color:#81a1c1;">-</span><span>config)
+</span><span>    (smartparens</span><span style="color:#81a1c1;">-</span><span>global</span><span style="color:#81a1c1;">-</span><span>mode </span><span style="color:#b48ead;">1</span><span>)
+</span><span>    (show</span><span style="color:#81a1c1;">-</span><span>paren</span><span style="color:#81a1c1;">-</span><span>mode </span><span style="color:#81a1c1;">t</span><span>)))
+</span></code></pre>
+<p>Selecting a region becomes smarter with expand region which keeps selecting an increasing region based on dwim syntax.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">use-package expand</span><span style="color:#81a1c1;">-</span><span>region
+</span><span>  :ensure </span><span style="color:#81a1c1;">t
+</span><span>  :bind (</span><span style="color:#a3be8c;">&quot;M-m&quot;</span><span> . er</span><span style="color:#81a1c1;">/</span><span style="color:#88c0d0;">expand</span><span style="color:#81a1c1;">-</span><span>region))
+</span></code></pre>
+<p>Some useful defaults are provided by the crux package of <a href="https://github.com/bbatsov/prelude">Prelude</a> fame. &quot;C-k&quot; now kills a line if nothing is selected. &quot;C-a&quot; now toggles between first letter on the line, or beginning of the line.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">use-package</span><span> crux
+</span><span>  :ensure </span><span style="color:#81a1c1;">t
+</span><span>  :bind
+</span><span>  (</span><span style="color:#a3be8c;">&quot;C-k&quot;</span><span> . crux</span><span style="color:#81a1c1;">-</span><span>smart</span><span style="color:#81a1c1;">-</span><span>kill</span><span style="color:#81a1c1;">-</span><span>line)
+</span><span>  (</span><span style="color:#a3be8c;">&quot;C-c n&quot;</span><span> . crux</span><span style="color:#81a1c1;">-</span><span>cleanup</span><span style="color:#81a1c1;">-</span><span>buffer</span><span style="color:#81a1c1;">-or-</span><span>region)
+</span><span>  (</span><span style="color:#a3be8c;">&quot;C-c f&quot;</span><span> . crux</span><span style="color:#81a1c1;">-</span><span>recentf</span><span style="color:#81a1c1;">-</span><span style="color:#88c0d0;">find</span><span style="color:#81a1c1;">-</span><span>file)
+</span><span>  (</span><span style="color:#a3be8c;">&quot;C-a&quot;</span><span> . crux</span><span style="color:#81a1c1;">-</span><span>move</span><span style="color:#81a1c1;">-</span><span>beginning</span><span style="color:#81a1c1;">-</span><span>of</span><span style="color:#81a1c1;">-</span><span>line))
+</span></code></pre>
+<p>Given the thousands of commands at your disposal, its only reasonable to have a package help you figure out the next keystroke. which-key package opens a small buffer at the bottom with suggestions for next keystroke and possible commands that are available.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">use-package</span><span> which</span><span style="color:#81a1c1;">-</span><span>key
+</span><span>  :ensure </span><span style="color:#81a1c1;">t
+</span><span>  :diminish which</span><span style="color:#81a1c1;">-</span><span>key</span><span style="color:#81a1c1;">-</span><span>mode
+</span><span>  :config
+</span><span>  (which</span><span style="color:#81a1c1;">-</span><span>key</span><span style="color:#81a1c1;">-</span><span>mode </span><span style="color:#81a1c1;">+</span><span style="color:#b48ead;">1</span><span>))
+</span></code></pre>
+<p>I can jump around in the current visual field using avy's go to char.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">use-package</span><span> avy
+</span><span>  :ensure </span><span style="color:#81a1c1;">t
+</span><span>  :bind
+</span><span>  (</span><span style="color:#a3be8c;">&quot;C-=&quot;</span><span> . avy</span><span style="color:#81a1c1;">-</span><span>goto</span><span style="color:#81a1c1;">-</span><span style="color:#88c0d0;">char</span><span>)
+</span><span>  :config
+</span><span>  (</span><span style="color:#88c0d0;">setq</span><span> avy</span><span style="color:#81a1c1;">-</span><span>background </span><span style="color:#81a1c1;">t</span><span>))
+</span></code></pre>
+<h2 id="autocomplete-and-syntax-checking">Autocomplete and syntax checking</h2>
+<p>I use company mode to provide completion and flycheck to do syntax checking and enable them globally.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">use-package</span><span> company
+</span><span>  :ensure </span><span style="color:#81a1c1;">t
+</span><span>  :diminish company</span><span style="color:#81a1c1;">-</span><span>mode
+</span><span>  :config
+</span><span>  (add</span><span style="color:#81a1c1;">-</span><span>hook &#39;after</span><span style="color:#81a1c1;">-</span><span>init</span><span style="color:#81a1c1;">-</span><span>hook #&#39;global-company-mode))
+</span><span>
+</span><span>(</span><span style="color:#88c0d0;">use-package</span><span> flycheck
+</span><span>  :ensure </span><span style="color:#81a1c1;">t
+</span><span>  :diminish flycheck</span><span style="color:#81a1c1;">-</span><span>mode
+</span><span>  :config
+</span><span>  (add</span><span style="color:#81a1c1;">-</span><span>hook &#39;after</span><span style="color:#81a1c1;">-</span><span>init</span><span style="color:#81a1c1;">-</span><span>hook #&#39;global-flycheck-mode))
+</span></code></pre>
+<h2 id="project-setup">Project setup</h2>
+<p>No project is begun without git and Emacs community's integration with git through magit is unparalleled in its expanse and ease of use. Setting that up is just as easy. &quot;C-M-g&quot; now triggers a git status buffer for the current file's repository.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">use-package</span><span> magit
+</span><span>  :bind ((</span><span style="color:#a3be8c;">&quot;C-M-g&quot;</span><span> . magit</span><span style="color:#81a1c1;">-</span><span>status)))
+</span></code></pre>
+<p>Projectile is a project manager that lets you easily switch between files in a project and seamlessly between projects as well. I use it with helm which I set up below.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">use-package</span><span> projectile
+</span><span>  :ensure </span><span style="color:#81a1c1;">t
+</span><span>  :diminish projectile</span><span style="color:#81a1c1;">-</span><span>mode
+</span><span>  :bind
+</span><span>  ((</span><span style="color:#a3be8c;">&quot;C-c p f&quot;</span><span> . helm</span><span style="color:#81a1c1;">-</span><span>projectile</span><span style="color:#81a1c1;">-</span><span style="color:#88c0d0;">find</span><span style="color:#81a1c1;">-</span><span>file)
+</span><span>   (</span><span style="color:#a3be8c;">&quot;C-c p p&quot;</span><span> . helm</span><span style="color:#81a1c1;">-</span><span>projectile</span><span style="color:#81a1c1;">-</span><span>switch</span><span style="color:#81a1c1;">-</span><span>project)
+</span><span>   (</span><span style="color:#a3be8c;">&quot;C-c p s&quot;</span><span> . projectile</span><span style="color:#81a1c1;">-</span><span>save</span><span style="color:#81a1c1;">-</span><span>project</span><span style="color:#81a1c1;">-</span><span>buffers))
+</span><span>  :config
+</span><span>  (projectile</span><span style="color:#81a1c1;">-</span><span>mode </span><span style="color:#81a1c1;">+</span><span style="color:#b48ead;">1</span><span>)
+</span><span>)
+</span></code></pre>
+<h2 id="helm">Helm</h2>
+<p>Helm requires its own heading. It is a dwim fuzzy completion framework for Emacs and makes navigating Emacs a much nicer experience overall. I like to setup Helm to be a comfortable 20 pts in height and bind the most frequent Emacs commands like &quot;M-x&quot; with the helm equivalents.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">use-package</span><span> helm
+</span><span>  :ensure </span><span style="color:#81a1c1;">t
+</span><span>  :defer </span><span style="color:#b48ead;">2
+</span><span>  :bind
+</span><span>  (</span><span style="color:#a3be8c;">&quot;M-x&quot;</span><span> . helm</span><span style="color:#81a1c1;">-</span><span>M</span><span style="color:#81a1c1;">-</span><span>x)
+</span><span>  (</span><span style="color:#a3be8c;">&quot;C-x C-f&quot;</span><span> . helm</span><span style="color:#81a1c1;">-</span><span style="color:#88c0d0;">find</span><span style="color:#81a1c1;">-</span><span>files)
+</span><span>  (</span><span style="color:#a3be8c;">&quot;M-y&quot;</span><span> . helm</span><span style="color:#81a1c1;">-</span><span>show</span><span style="color:#81a1c1;">-</span><span>kill</span><span style="color:#81a1c1;">-</span><span>ring)
+</span><span>  (</span><span style="color:#a3be8c;">&quot;C-x b&quot;</span><span> . helm</span><span style="color:#81a1c1;">-</span><span>mini)
+</span><span>  :config
+</span><span>  (</span><span style="color:#88c0d0;">require</span><span> &#39;helm</span><span style="color:#81a1c1;">-</span><span>config)
+</span><span>  (helm</span><span style="color:#81a1c1;">-</span><span>mode </span><span style="color:#b48ead;">1</span><span>)
+</span><span>  (</span><span style="color:#88c0d0;">setq</span><span> helm</span><span style="color:#81a1c1;">-</span><span style="color:#88c0d0;">split</span><span style="color:#81a1c1;">-</span><span>window</span><span style="color:#81a1c1;">-</span><span>inside</span><span style="color:#81a1c1;">-</span><span>p </span><span style="color:#81a1c1;">t
+</span><span>    helm</span><span style="color:#81a1c1;">-</span><span>move</span><span style="color:#81a1c1;">-to-</span><span>line</span><span style="color:#81a1c1;">-</span><span>cycle</span><span style="color:#81a1c1;">-</span><span>in</span><span style="color:#81a1c1;">-</span><span>source </span><span style="color:#81a1c1;">t</span><span>)
+</span><span>  (</span><span style="color:#88c0d0;">setq</span><span> helm</span><span style="color:#81a1c1;">-</span><span>autoresize</span><span style="color:#81a1c1;">-max-</span><span>height </span><span style="color:#b48ead;">0</span><span>)
+</span><span>  (</span><span style="color:#88c0d0;">setq</span><span> helm</span><span style="color:#81a1c1;">-</span><span>autoresize</span><span style="color:#81a1c1;">-min-</span><span>height </span><span style="color:#b48ead;">20</span><span>)
+</span><span>  (helm</span><span style="color:#81a1c1;">-</span><span>autoresize</span><span style="color:#81a1c1;">-</span><span>mode </span><span style="color:#b48ead;">1</span><span>)
+</span><span>  (define</span><span style="color:#81a1c1;">-</span><span>key helm</span><span style="color:#81a1c1;">-</span><span style="color:#88c0d0;">map </span><span>(kbd </span><span style="color:#a3be8c;">&quot;&lt;tab&gt;&quot;</span><span>) &#39;helm</span><span style="color:#81a1c1;">-</span><span>execute</span><span style="color:#81a1c1;">-</span><span>persistent</span><span style="color:#81a1c1;">-</span><span>action) </span><span style="color:#616e88;">; rebind tab to run persistent action
+</span><span>  (define</span><span style="color:#81a1c1;">-</span><span>key helm</span><span style="color:#81a1c1;">-</span><span style="color:#88c0d0;">map </span><span>(kbd </span><span style="color:#a3be8c;">&quot;C-i&quot;</span><span>) &#39;helm</span><span style="color:#81a1c1;">-</span><span>execute</span><span style="color:#81a1c1;">-</span><span>persistent</span><span style="color:#81a1c1;">-</span><span>action) </span><span style="color:#616e88;">; make TAB work in terminal
+</span><span>  (define</span><span style="color:#81a1c1;">-</span><span>key helm</span><span style="color:#81a1c1;">-</span><span style="color:#88c0d0;">map </span><span>(kbd </span><span style="color:#a3be8c;">&quot;C-z&quot;</span><span>)  &#39;helm</span><span style="color:#81a1c1;">-</span><span>select</span><span style="color:#81a1c1;">-</span><span>action) </span><span style="color:#616e88;">; list actions using C-z
+</span><span>  )
+</span></code></pre>
+<p>I combine it with projectile to show project files through a helm fuzzy find interface.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">use-package</span><span> helm</span><span style="color:#81a1c1;">-</span><span>projectile
+</span><span>  :ensure </span><span style="color:#81a1c1;">t
+</span><span>  :config
+</span><span>  (helm</span><span style="color:#81a1c1;">-</span><span>projectile</span><span style="color:#81a1c1;">-</span><span>on))
+</span></code></pre>
+<h2 id="daemon-mode">Daemon Mode</h2>
+<p>At the end I start the Emacs server so that any new frames that I open don't have to load the configuration from scratch.</p>
+<pre data-lang="el" style="background-color:#2e3440;color:#d8dee9;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#88c0d0;">require</span><span> &#39;server)
+</span><span>(</span><span style="color:#81a1c1;">if </span><span>(</span><span style="color:#81a1c1;">not </span><span>(server</span><span style="color:#81a1c1;">-</span><span>running</span><span style="color:#81a1c1;">-</span><span>p)) (server</span><span style="color:#81a1c1;">-</span><span>start))
+</span></code></pre>
+<p>You can find my full Emacs configuration at my <a href="https://github.com/gamedolphin/.emacs.d">github</a> repository.</p>
+
+
+            </main>
+            <footer>
+                
+
+<p class="taxonomies">
+
+
+<a href="/tags/emacs">#emacs</a>
+
+
+
+
+</p>
+
+  
+  <script src="https://giscus.app/client.js"
+        data-repo="gamedolphin/gamedolphin.github.com"
+        data-repo-id="R_kgDOMgpr2g"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOMgpr2s4ChgX6"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="noborder_gray"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+  </script>
+  
+
+                
+                <nav>
+                    
+                    <a href="https://calculating-cat.pikapod.net/share/uOgHMhM18K3kAuga/www.sandeepnambiar.com">Analytics</a>
+                    
+                </nav>
+                
+            </footer>
+        </div>
+    </body>
+</html>
+        
