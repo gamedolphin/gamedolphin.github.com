@@ -8,19 +8,21 @@ Senior Software Engineer
 
 [contact@sandeepnambiar.com](mailto:contact@sandeepnambiar.com)
 
-[https://www.sandeepnambiar.com](https://www.sandeepnambiar.com)
-
-[github](https://www.github.com/gamedolphin), [youtube](https://www.youtube.com/@_sandeepnambiar), [linkedin](https://www.linkedin.com/in/nambiarsandeep)
+[website](https://www.sandeepnambiar.com), [github](https://www.github.com/gamedolphin), [youtube](https://www.youtube.com/@_sandeepnambiar), [linkedin](https://www.linkedin.com/in/nambiarsandeep)
 
 ## Skills
-Fullstack generalist programmer with over 10 years of experience in making high performance, scalable and maintainable games, apps and backend systems.
-
+Fullstack generalist programmer with over 14 years of experience in making high performance, scalable and maintainable games, apps and backend systems.
 
 Rust, Go, C#, C++, Typescript, Unity, React.
 
 ## Experience
+### lessmore
+_Senior Backend Engineer / Malmö / April 2025 - Present_
+
+<span style="font-size: 1rem;">Working on the large scale backend systems for handling cheat free game logic and complex multiplayer interactions in new and upcoming games.</span>
+
 ### coherence
-_Senior Software Engineer / Malmö / October 2020 - Present_
+_Senior Software Engineer / Malmö / October 2020 - March 2025_
 
 <span style="font-size: 1rem;">Led multiple initiatives to create the core of the high performance networking engine. Helped grow the team from 5 to about 30 in a fully remote company.</span>
 
@@ -50,5 +52,4 @@ _B.Sc (H) Physics / New Delhi / August 2010 - July 2013_
 [One More Run](https://apps.apple.com/in/app/one-more-run-endless-cricket-runner/id973444967) - Endless cricket runner, best games of 2015 on iOS.
 
 ## Talks
-[Why You Should Make Pong](https://www.youtube.com/watch?v=6pTd01M2MCI) 
-
+[Why You Should Make Pong](https://www.youtube.com/watch?v=6pTd01M2MCI)

@@ -1,7 +1,7 @@
 ---
 ---
 - [about me](./about)
-    - born 1991, almost a physicist, now a game developer and software engineer [@coherence](https://www.coherence.io)
+    - born 1991, almost a physicist, now a game developer and software engineer [@lessmore](https://lessmore.games)
     - [github](https://github.com/gamedolphin)
     - [youtube](https://www.youtube.com/@_sandeepnambiar)
     - [facebook](https://www.facebook.com/sand.nambiar), [twitter](https://x.com/_sandeepnambiar), [linkedin](https://www.linkedin.com/in/nambiarsandeep/), [hn](https://news.ycombinator.com/user?id=sandeep-nambiar)

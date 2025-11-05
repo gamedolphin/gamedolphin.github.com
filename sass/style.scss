@@ -24,23 +24,23 @@ body[theme="dark"] {
     }
 }
 
-html, body { background: #2e3440; position: relative; };
+html, body { background: #1e1e2e; position: relative; };
 
 body {
-    color: #d8dee9;
+    color: #cdd6f4;
     font-family: "Iosevka Aile", sans-serif;
     font-size: 18px;
 };
 
 blockquote {
-    background-color: #3b4252;
+    background-color: #45475a;
     border-color: transparent;
 }
 
-*:target { background: #88c0d0; }
+*:target { background: #89b4fa; }
 
 table, th, td {
-    border: thin solid #2e3440;
+    border: thin solid #313244;
     border-collapse: collapse;
     padding: 0.4rem;
 }
@@ -48,18 +48,18 @@ table, th, td {
 code, pre {
     font-family: "Iosevka", monospace;
     font-size: 16px;
-    background: #434c5e;
+    background: #45475a;
 }
 
 a {
-    color: #88c0d0;
+    color: #89b4fa;
 }
 
 .footnote-definition {
     padding: 0 1rem;
     &:target {
-        background: #88c0d0;
-        color: #212121;
+        background: #89b4fa;
+        color: #45475a;
     }
     p {
         display: inline;
@@ -82,7 +82,7 @@ iframe {
     background: none!important;
     border: none;
     padding: 0!important;
-    /*optional*/    
+    /*optional*/
     /*input has OS specific font-family*/
     color: #fff;
     text-decoration: underline;
@@ -101,7 +101,7 @@ footer nav {
     header { display: none; }
     * { background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important;
         -ms-filter: none !important; } /* Black prints faster: sanbeiji.com/archives/953 */
-    p a { color: #444 !important; text-decoration: underline; }        
+    p a { color: #444 !important; text-decoration: underline; }
     pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
     thead { display: table-header-group; } /* css-discuss.incutio.com/wiki/Printing_Tables */
     tr, img { page-break-inside: avoid; }
@@ -109,7 +109,7 @@ footer nav {
     p, h2, h3 { orphans: 3; widows: 3; margin: 0px; font-size: 14px; }
     p em { font-size: 15px; }
     h2, h3{ page-break-after: avoid; }
-    * { margin-block: 0px; }        
+    * { margin-block: 0px; }
     h3 { font-size: 16px; margin-top: 0.5rem; }
     h2 { font-size: 18px; margin-top: 0.8rem; }
     section a{ }

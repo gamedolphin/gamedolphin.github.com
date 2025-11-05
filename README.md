@@ -1,4 +1,4 @@
-# Personal Website 
+# Personal Website
 
 ![Github Deploy Status](https://github.com/gamedolphin/gamedolphin.github.com/actions/workflows/deploy.yaml/badge.svg)
 
@@ -12,7 +12,7 @@ The website is deployed on [github pages](https://pages.github.com/) and is buil
 
 The theme is a fork of [no style, please!](https://github.com/atgumx/no-style-please).
 
-On each `v*` tag, a github action is run that replaces the contents on the [gh-pages branch](https://github.com/gamedolphin/gamedolphin.github.com/tree/gh-pages) and then github pages automatically deploys it. 
+On each `v*` tag, a github action is run that replaces the contents on the [gh-pages branch](https://github.com/gamedolphin/gamedolphin.github.com/tree/gh-pages) and then github pages automatically deploys it.
 
 ## Getting Started
 
@@ -28,6 +28,8 @@ zola serve
 ```
 
 ## Version History
+* 2.0.1
+    * Update work and computer setup
 * 2.0.0
     * Gisqus driven comments now live on the website.
 * 1.1.0
