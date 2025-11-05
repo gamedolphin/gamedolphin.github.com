@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+        <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
+        <meta content="width=device-width, initial-scale=1" name="viewport"/>
+
+        
+        
+        
+
+        
+
+        
+        
+        
+
+        
+
+        
+        
+        
+
+        <title>Literate System Configuration</title>
+        
+        <meta name="title" content="Literate System Configuration">
+        
+        <meta name="description" content="Sandeep Nambiar&#x27;s personal website">
+        <meta name="generator" content="Zola v0.16.1">
+
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://www.sandeepnambiar.com/blog/literate-nixos/">
+        <meta property="og:site_name" content="Sandeep Nambiar">
+        <meta property="og:title" content="Literate System Configuration">
+        <meta property="og:description" content="Sandeep Nambiar&#x27;s personal website">
+        
+
+        
+        
+        <meta property="twitter:card" content="summary_large_image">
+        <meta property="twitter:url" content="https://www.sandeepnambiar.com/blog/literate-nixos/">
+        <meta property="twitter:title" content="Literate System Configuration">
+        <meta property="twitter:description" content="Sandeep Nambiar&#x27;s personal website">
+        
+        
+        
+        <link rel="canonical" href="https://www.sandeepnambiar.com/blog/literate-nixos/">
+        
+        <script type="application/ld+json">
+            {
+                "description":"Sandeep Nambiar's personal website",
+                "url":"https://www.sandeepnambiar.com/blog/literate-nixos/",
+                "@type":"WebSite",
+                "headline":"Literate System Configuration",
+                "name":"Literate System Configuration",
+                
+                "@context":"https://schema.org"
+            }
+        </script>
+        
+        
+        
+
+        <link rel="stylesheet" href="https://www.sandeepnambiar.com/style.css"/>
+        
+<script defer src="https://calculating-cat.pikapod.net/script.js" data-website-id="e274bd34-543a-448b-aead-5e91046e37b0"></script>
+
+    </head>
+    <body theme="auto">
+        <div class="w">
+            <header>
+                
+                
+<p><a href="..">..</a>/literate-nixos</p>
+<p class="post-meta"><time datetime="2025-01-10">2025-01-10</time></p>
+<h1>Literate System Configuration</h1>
+
+            </header>
+            <main class="page-content" aria-label="Content">
+                
+
+
+
+<p>I use <a href="https://nixos.wiki/">nixos</a> to setup my Linux workstations. This provides an immutable, stable system.
+And when I break it, I can just revert to the previous stable version.</p>
+<p>I might have destroyed my linux knowledge because of this. I now fix things through Nix configuration instead.</p>
+<p>Over the holidays, I also spent some time learning to use <a href="https://orgmode.org/">org mode</a> inside Emacs.
+It's a bunch of things packed into a super powerful built-in plugin.
+I have seen many &quot;literate&quot;  emacs configurations in the <a href="https://protesilaos.com/codelog/2023-12-18-emacs-org-advanced-literate-conf/">wild</a>.
+They are just long org documents that also behave as the configuration file for emacs itself.</p>
+<p>Well, if you can configure emacs using this, then surely you can configure your whole system if you combine it with nixos.
+And that is exactly what I did.</p>
+<p>You can find my literate system configuration <a href="https://github.com/gamedolphin/system">here</a>.
+It describes (and configures) all the software for both my workstations (the wfh desktop and travel laptop).
+I also managed to integrate <a href="https://github.com/Mic92/sops-nix">sops</a> this time around and so the repo actually completely configures my system, <em>including</em> secrets like ssh and api keys.</p>
+<p>The expected workflow for me, going forward, is to edit the README file to make my changes and then run <code>org-tangle</code> to generate the nix files.
+Once the nix files are ready, I can do the usual <code>nixos-rebuild</code> to apply the changes.</p>
+<p>I have added a snippet at the bottom of the README that actually adds a &quot;DO NOT MODIFY&quot; header to all the generated files.
+This should be fair warning, mainly for me, to not edit these directly, lest I forget and risk losing those changes.</p>
+<pre data-lang="emacs-lisp" style="background-color:#2b303b;color:#c0c5ce;" class="language-emacs-lisp "><code class="language-emacs-lisp" data-lang="emacs-lisp"><span>  (progn
+</span><span>    (defun add-tangle-headers ()
+</span><span>      (message &quot;running in %s&quot; (buffer-file-name))
+</span><span>      (when (string= (file-name-extension (buffer-file-name)) &quot;nix&quot;)
+</span><span>        (goto-char (point-min))
+</span><span>        (insert &quot;# WARNING : This file was generated by README.org\n# DO NOT MODIFY THIS FILE!\n# Any changes made here will be overwritten.\n&quot;)
+</span><span>        (save-buffer))
+</span><span>      (save-buffer))
+</span><span>    (add-hook &#39;org-babel-post-tangle-hook &#39;add-tangle-headers))
+</span></code></pre>
+<h3 id="github-ci-cd">Github CI/CD</h3>
+<p>Finally, the github repo also has a <a href="https://github.com/gamedolphin/system/actions/workflows/tangle.yml">github action</a> configured to run the tangling automatically on changing the README.
+That will keep the generated files up to date in case I forget to push them.
+I could have skipped adding the generated files BUT nix flakes behaves wierdly if some files are in git, and others are not.
+It just makes life easier when applying the changes.</p>
+<p>The only addition here is that the tangling command has to allow the header insertion code to run. That is why the command looks this long in the action.</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">emacs</span><span> README.org</span><span style="color:#bf616a;"> --batch --eval </span><span>&quot;</span><span style="color:#a3be8c;">(setq org-confirm-babel-evaluate nil)</span><span>&quot;</span><span style="color:#bf616a;"> --eval </span><span>&quot;</span><span style="color:#a3be8c;">(progn (require &#39;org) (org-babel-goto-named-src-block </span><span style="color:#96b5b4;">\&quot;</span><span style="color:#a3be8c;">startup</span><span style="color:#96b5b4;">\&quot;</span><span style="color:#a3be8c;">) (org-babel-execute-src-block))</span><span>&quot;</span><span style="color:#bf616a;"> -f</span><span> org-babel-tangle
+</span></code></pre>
+<p>This should also keep me from breaking the tangling setup.</p>
+<h3 id="just-read-it">Just read it</h3>
+<p>You can just read the file and see how I've setup my computer. You can also just read the raw file to see how I've setup org mode tangling! This setup gives me a documented, reproducible system configuration that's easy to maintain and share. Cheers!</p>
+
+
+            </main>
+            <footer>
+                
+
+<p class="taxonomies">
+
+
+<a href="/tags/blog">#blog</a>
+
+<a href="/tags/website">#website</a>
+
+<a href="/tags/nixos">#nixos</a>
+
+<a href="/tags/emacs">#emacs</a>
+
+<a href="/tags/org">#org</a>
+
+
+
+
+</p>
+
+  
+  <script src="https://giscus.app/client.js"
+        data-repo="gamedolphin/gamedolphin.github.com"
+        data-repo-id="R_kgDOMgpr2g"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOMgpr2s4ChgX6"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="noborder_gray"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+  </script>
+  
+
+                
+                <nav>
+                    
+                    <a href="https://calculating-cat.pikapod.net/share/uOgHMhM18K3kAuga/www.sandeepnambiar.com">Analytics</a>
+                    
+                </nav>
+                
+            </footer>
+        </div>
+    </body>
+</html>
+        

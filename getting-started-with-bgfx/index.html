@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+        <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
+        <meta content="width=device-width, initial-scale=1" name="viewport"/>
+
+        
+        
+        
+
+        
+
+        
+        
+        
+
+        
+
+        
+        
+        
+
+        <title>Using the bgfx library with C++ on Ubuntu</title>
+        
+        <meta name="title" content="Using the bgfx library with C++ on Ubuntu">
+        
+        <meta name="description" content="Sandeep Nambiar&#x27;s personal website">
+        <meta name="generator" content="Zola v0.16.1">
+
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://www.sandeepnambiar.com/getting-started-with-bgfx/">
+        <meta property="og:site_name" content="Sandeep Nambiar">
+        <meta property="og:title" content="Using the bgfx library with C++ on Ubuntu">
+        <meta property="og:description" content="Sandeep Nambiar&#x27;s personal website">
+        
+
+        
+        
+        <meta property="twitter:card" content="summary_large_image">
+        <meta property="twitter:url" content="https://www.sandeepnambiar.com/getting-started-with-bgfx/">
+        <meta property="twitter:title" content="Using the bgfx library with C++ on Ubuntu">
+        <meta property="twitter:description" content="Sandeep Nambiar&#x27;s personal website">
+        
+        
+        
+        <link rel="canonical" href="https://www.sandeepnambiar.com/getting-started-with-bgfx/">
+        
+        <script type="application/ld+json">
+            {
+                "description":"Sandeep Nambiar's personal website",
+                "url":"https://www.sandeepnambiar.com/getting-started-with-bgfx/",
+                "@type":"WebSite",
+                "headline":"Using the bgfx library with C++ on Ubuntu",
+                "name":"Using the bgfx library with C++ on Ubuntu",
+                
+                "@context":"https://schema.org"
+            }
+        </script>
+        
+        
+        
+
+        <link rel="stylesheet" href="https://www.sandeepnambiar.com/style.css"/>
+        
+<script defer src="https://calculating-cat.pikapod.net/script.js" data-website-id="e274bd34-543a-448b-aead-5e91046e37b0"></script>
+
+    </head>
+    <body theme="auto">
+        <div class="w">
+            <header>
+                
+                
+<p><a href="..">..</a>/getting-started-with-bgfx</p>
+<p class="post-meta"><time datetime="2019-05-16">2019-05-16</time></p>
+<h1>Using the bgfx library with C++ on Ubuntu</h1>
+
+            </header>
+            <main class="page-content" aria-label="Content">
+                
+
+
+
+<h2 id="bgfx-what-is-it">Bgfx - what is it?</h2>
+<blockquote>
+<p>Cross-platform, graphics API agnostic, “Bring Your Own Engine/Framework” style rendering library, licensed under permissive BSD-2 clause open source license.</p>
+</blockquote>
+<p><a href="https://bkaradzic.github.io/bgfx/overview.html">bgfx</a> is a rendering library. It acts as an abstraction layer over the platform rendering APIs along with some sauce for added efficiency. It also has bindings to most popular languages including C#, F#, D, Go, Haskell, Python, Rust and Swift. I don't claim to have built anything substantial with bgfx, but I did manage to figure out how to get a square on screen. The documentation and examples are thorough but they do not hold your hand through the process. So let me.</p>
+<blockquote>
+<p>Disclaimer: This tutorial is a result of initial exploration with bgfx and getting a square on screen. I do not claim to have the best makefiles, memory safe code or efficient methods. Those topics are for future tutorials.</p>
+</blockquote>
+<h2 id="prior-knowledge">Prior Knowledge</h2>
+<p>bgfx is quite close to the metal innards of 3d rendering, being just a thin wrapper. So I would highly recommend going through this <a href="https://learnopengl.com/Introduction">OpenGL Tutorial</a> to get comfortable with how modern 3d rendering works. It would really help in making sense of what bgfx is doing at any moment.</p>
+<h2 id="project-setup">Project setup</h2>
+<p>bgfx only handles the rendering, which means we need to use a windowing library (the brave can use the platform code directly, be my guest). I chose SDL. Ensure your system has SDL dev libraries installed along with bgfx dependencies on Ubuntu.</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">sudo</span><span> apt-get install libsdl2-2.0 libgl1-mesa-dev x11proto-core-dev libx11-dev
+</span></code></pre>
+<p>Ok, for the sake of this tutorial, lets make a simple C++ project, starting with a Makefile that links up SDL2, GL, X11, DL, pthread and rt libraries.</p>
+<pre data-lang="make" style="background-color:#2b303b;color:#c0c5ce;" class="language-make "><code class="language-make" data-lang="make"><span style="color:#65737e;"># CC specifies which compiler we&#39;re using
+</span><span style="color:#bf616a;">CC </span><span>= </span><span style="color:#a3be8c;">g++
+</span><span>
+</span><span style="color:#65737e;"># COMPILER_FLAGS specifies the additional compilation options we&#39;re using
+</span><span style="color:#65737e;"># -w suppresses all warnings
+</span><span style="color:#bf616a;">COMPILER_FLAGS </span><span>= </span><span style="color:#a3be8c;">-w
+</span><span>
+</span><span style="color:#65737e;"># LINKER_FLAGS specifies the libraries we&#39;re linking against
+</span><span style="color:#bf616a;">LINKER_FLAGS </span><span>= </span><span style="color:#a3be8c;">-lSDL2 -lGL -lX11 -ldl -lpthread -lrt
+</span><span>
+</span><span style="color:#65737e;"># This is the target that compiles our executable
+</span><span style="color:#8fa1b3;">all </span><span>: </span><span style="color:#a3be8c;">main.cpp
+</span><span>    </span><span style="color:#b48ead;">$(</span><span style="color:#bf616a;">CC</span><span style="color:#b48ead;">) </span><span style="color:#bf616a;">main.cpp -o</span><span>  main </span><span style="color:#b48ead;">$(</span><span style="color:#bf616a;">COMPILER_FLAGS</span><span style="color:#b48ead;">) $(</span><span style="color:#bf616a;">LINKER_FLAGS</span><span style="color:#b48ead;">)
+</span></code></pre>
+<p>And lets add a simple <code>main.cpp</code> file as well.</p>
+<pre data-lang="cpp" style="background-color:#2b303b;color:#c0c5ce;" class="language-cpp "><code class="language-cpp" data-lang="cpp"><span style="color:#b48ead;">int </span><span style="color:#8fa1b3;">main </span><span>( </span><span style="color:#b48ead;">int </span><span style="color:#bf616a;">argc</span><span>, </span><span style="color:#b48ead;">char</span><span>* </span><span style="color:#bf616a;">args</span><span>[] ) {
+</span><span>  </span><span style="color:#b48ead;">return </span><span style="color:#d08770;">0</span><span>;
+</span><span>}
+</span></code></pre>
+<p>You should try and run make and then run the program to see if everything is setup correctly.</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">make</span><span> all &amp;&amp; </span><span style="color:#bf616a;">./main
+</span></code></pre>
+<h2 id="getting-a-window-on-screen">Getting a window on screen</h2>
+<p>As mentioned earlier, we would be using SDL to create a window and poll for events. The code for that is fairly straight forward. If you need to understand more about setting up SDL, I recommend going through <a href="http://lazyfoo.net/tutorials/SDL/index.php">LazyFoo's SDL tutorial series</a>.</p>
+<pre data-lang="cpp" style="background-color:#2b303b;color:#c0c5ce;" class="language-cpp "><code class="language-cpp" data-lang="cpp"><span style="color:#b48ead;">#include </span><span>&lt;</span><span style="color:#a3be8c;">stdio.h</span><span>&gt;
+</span><span style="color:#b48ead;">#include </span><span>&lt;</span><span style="color:#a3be8c;">SDL2/SDL.h</span><span>&gt;
+</span><span style="color:#b48ead;">#include </span><span>&lt;</span><span style="color:#a3be8c;">SDL2/SDL_syswm.h</span><span>&gt;
+</span><span>
+</span><span>SDL_Window* window = </span><span style="color:#d08770;">NULL</span><span>;
+</span><span style="color:#b48ead;">const int</span><span> WIDTH = </span><span style="color:#d08770;">640</span><span>;
+</span><span style="color:#b48ead;">const int</span><span> HEIGHT = </span><span style="color:#d08770;">480</span><span>;
+</span><span style="color:#b48ead;">int </span><span style="color:#8fa1b3;">main </span><span>(</span><span style="color:#b48ead;">int </span><span style="color:#bf616a;">argc</span><span>, </span><span style="color:#b48ead;">char</span><span>* </span><span style="color:#bf616a;">args</span><span>[]) {
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Initialize SDL systems
+</span><span>  </span><span style="color:#b48ead;">if</span><span>(</span><span style="color:#bf616a;">SDL_Init</span><span>( SDL_INIT_VIDEO ) &lt; </span><span style="color:#d08770;">0</span><span>) {
+</span><span>    </span><span style="color:#96b5b4;">printf</span><span>(&quot;</span><span style="color:#a3be8c;">SDL could not initialize! SDL_Error: </span><span style="color:#d08770;">%s</span><span style="color:#96b5b4;">\n</span><span>&quot;,
+</span><span>           </span><span style="color:#bf616a;">SDL_GetError</span><span>());
+</span><span>  }
+</span><span>  </span><span style="color:#b48ead;">else </span><span>{
+</span><span>    </span><span style="color:#65737e;">//Create a window
+</span><span>     window = </span><span style="color:#bf616a;">SDL_CreateWindow</span><span>(&quot;</span><span style="color:#a3be8c;">BGFX Tutorial</span><span>&quot;,
+</span><span>                                SDL_WINDOWPOS_UNDEFINED,
+</span><span>                                SDL_WINDOWPOS_UNDEFINED,
+</span><span>                                WIDTH, HEIGHT,
+</span><span>                                SDL_WINDOW_SHOWN);
+</span><span>    </span><span style="color:#b48ead;">if</span><span>(window == </span><span style="color:#d08770;">NULL</span><span>) {
+</span><span>      </span><span style="color:#96b5b4;">printf</span><span>(&quot;</span><span style="color:#a3be8c;">Window could not be created! SDL_Error: </span><span style="color:#d08770;">%s</span><span style="color:#96b5b4;">\n</span><span>&quot;,
+</span><span>             </span><span style="color:#bf616a;">SDL_GetError</span><span>());
+</span><span>    }
+</span><span>  }
+</span><span>
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Poll for events and wait till user closes window
+</span><span>  </span><span style="color:#b48ead;">bool</span><span> quit = </span><span style="color:#d08770;">false</span><span>;
+</span><span>  SDL_Event currentEvent;
+</span><span>  </span><span style="color:#b48ead;">while</span><span>(!quit) {
+</span><span>    </span><span style="color:#b48ead;">while</span><span>(</span><span style="color:#bf616a;">SDL_PollEvent</span><span>(&amp;currentEvent) != </span><span style="color:#d08770;">0</span><span>) {
+</span><span>      </span><span style="color:#b48ead;">if</span><span>(currentEvent.</span><span style="color:#bf616a;">type </span><span>== SDL_QUIT) {
+</span><span>        quit = </span><span style="color:#d08770;">true</span><span>;
+</span><span>      }
+</span><span>    }
+</span><span>  }
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Free up window
+</span><span>  </span><span style="color:#bf616a;">SDL_DestroyWindow</span><span>(window);
+</span><span>  </span><span style="color:#65737e;">// Shutdown SDL
+</span><span>  </span><span style="color:#bf616a;">SDL_Quit</span><span>();
+</span><span>
+</span><span>  </span><span style="color:#b48ead;">return </span><span style="color:#d08770;">0</span><span>;
+</span><span>}
+</span></code></pre>
+<p>Compiling and running the program at this point should get you something like the following image.</p>
+<p><img src="/images/bgfx_tutorial.png" alt="SDL Window" /></p>
+<h2 id="getting-and-building-bgfx">Getting and building BGFX</h2>
+<p>First clone the bgfx repository and its dependencies bx and bimg libraries into the project.</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">git</span><span> clone git://github.com/bkaradzic/bx.git
+</span><span style="color:#bf616a;">git</span><span> clone git://github.com/bkaradzic/bimg.git
+</span><span style="color:#bf616a;">git</span><span> clone git://github.com/bkaradzic/bgfx.git
+</span></code></pre>
+<p>Then lets build bgfx.</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#96b5b4;">cd</span><span> bgfx
+</span><span style="color:#bf616a;">make</span><span> linux-release64
+</span></code></pre>
+<p>If you following along on anything other than an Ubuntu system, you can find instructions to build bgfx <a href="https://bkaradzic.github.io/bgfx/build.html">here</a>.</p>
+<p>At the end of this process, you'll have a bunch of library files and executables sitting in the <code>bgfx/.build/linux64_gcc/bin</code> folder. Let us link them in the makefile.</p>
+<pre data-lang="make" style="background-color:#2b303b;color:#c0c5ce;" class="language-make "><code class="language-make" data-lang="make"><span style="color:#bf616a;">BGFX_HEADERS </span><span>=  </span><span style="color:#a3be8c;">-Ibgfx/include -Ibx/include -Ibimg/include
+</span><span>
+</span><span style="color:#65737e;"># Update linker flags to include the shared library that you just built
+</span><span style="color:#bf616a;">LINKER_FLAGS </span><span>= </span><span style="color:#a3be8c;">bgfx/.build/linux64_gcc/bin/libbgfx-shared-libRelease.so -lSDL2 -lGL -lX11 -ldl -lpthread -lrt
+</span><span>
+</span><span style="color:#65737e;">#This is the target that compiles our executable
+</span><span style="color:#8fa1b3;">all </span><span>: </span><span style="color:#a3be8c;">main.cpp
+</span><span>    </span><span style="color:#b48ead;">$(</span><span style="color:#bf616a;">CC</span><span style="color:#b48ead;">) </span><span style="color:#bf616a;">main.cpp -o</span><span>  main </span><span style="color:#b48ead;">$(</span><span style="color:#bf616a;">COMPILER_FLAGS</span><span style="color:#b48ead;">) $(</span><span style="color:#bf616a;">LINKER_FLAGS</span><span style="color:#b48ead;">) $(</span><span style="color:#bf616a;">BGFX_HEADERS</span><span style="color:#b48ead;">)
+</span></code></pre>
+<p>I've linked the shared version to make compile faster, but you can also link the static library <code>libbgfxRelease.a</code> if you want.</p>
+<h2 id="initializing-bgfx">Initializing BGFX</h2>
+<p>Now that the window is ready and bgfx is linked, lets initialize bgfx in our code.</p>
+<pre data-lang="cpp" style="background-color:#2b303b;color:#c0c5ce;" class="language-cpp "><code class="language-cpp" data-lang="cpp"><span style="color:#b48ead;">#include </span><span>&lt;</span><span style="color:#a3be8c;">bgfx/bgfx.h</span><span>&gt;
+</span><span style="color:#b48ead;">#include </span><span>&lt;</span><span style="color:#a3be8c;">bgfx/platform.h</span><span>&gt;
+</span><span style="color:#b48ead;">#include </span><span>&lt;</span><span style="color:#a3be8c;">SDL2/SDL_syswm.h</span><span>&gt;
+</span><span>
+</span><span style="color:#65737e;">// Other includes and after opening the window
+</span><span>...
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Collect information about the window from SDL
+</span><span>  SDL_SysWMinfo wmi;
+</span><span>  </span><span style="color:#bf616a;">SDL_VERSION</span><span>(&amp;wmi.</span><span style="color:#bf616a;">version</span><span>);
+</span><span>  </span><span style="color:#b48ead;">if </span><span>(!</span><span style="color:#bf616a;">SDL_GetWindowWMInfo</span><span>(window, &amp;wmi)) {
+</span><span>    </span><span style="color:#b48ead;">return </span><span style="color:#d08770;">1</span><span>;
+</span><span>  }
+</span><span>
+</span><span>  bgfx::PlatformData pd;
+</span><span>  </span><span style="color:#65737e;">// and give the pointer to the window to pd
+</span><span>  pd.</span><span style="color:#bf616a;">ndt </span><span>= wmi.</span><span style="color:#bf616a;">info</span><span>.</span><span style="color:#bf616a;">x11</span><span>.</span><span style="color:#bf616a;">display</span><span>;
+</span><span>  pd.</span><span style="color:#bf616a;">nwh </span><span>= (</span><span style="color:#b48ead;">void</span><span>*)(uintptr_t)wmi.</span><span style="color:#bf616a;">info</span><span>.</span><span style="color:#bf616a;">x11</span><span>.</span><span style="color:#bf616a;">window</span><span>;
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Tell bgfx about the platform and window
+</span><span>  bgfx::</span><span style="color:#8fa1b3;">setPlatformData</span><span>(</span><span style="color:#bf616a;">pd</span><span>);
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Render an empty frame
+</span><span>  bgfx::</span><span style="color:#8fa1b3;">renderFrame</span><span>();
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Initialize bgfx
+</span><span>  bgfx::</span><span style="color:#8fa1b3;">init</span><span>();
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Reset window
+</span><span>  bgfx::</span><span style="color:#8fa1b3;">reset</span><span>(</span><span style="color:#bf616a;">WIDTH</span><span>, </span><span style="color:#bf616a;">HEIGHT</span><span>, </span><span style="color:#bf616a;">BGFX_RESET_VSYNC</span><span>);
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Enable debug text.
+</span><span>  bgfx::</span><span style="color:#8fa1b3;">setDebug</span><span>(BGFX_DEBUG_TEXT </span><span style="color:#65737e;">/*| BGFX_DEBUG_STATS*/</span><span>);
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Set view rectangle for 0th view
+</span><span>  bgfx::</span><span style="color:#8fa1b3;">setViewRect</span><span>(</span><span style="color:#d08770;">0</span><span>, </span><span style="color:#d08770;">0</span><span>, </span><span style="color:#d08770;">0</span><span>, uint16_t(WIDTH), uint16_t(HEIGHT));
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Clear the view rect
+</span><span>  bgfx::</span><span style="color:#8fa1b3;">setViewClear</span><span>(</span><span style="color:#d08770;">0</span><span>,
+</span><span>                     BGFX_CLEAR_COLOR | </span><span style="color:#bf616a;">BGFX_CLEAR_DEPTH</span><span>,
+</span><span>                     </span><span style="color:#d08770;">0x443355FF</span><span>, </span><span style="color:#d08770;">1.0</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0</span><span>);
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Set empty primitive on screen
+</span><span>  bgfx::</span><span style="color:#8fa1b3;">touch</span><span>(</span><span style="color:#d08770;">0</span><span>);
+</span><span>
+</span><span>
+</span><span>  </span><span style="color:#65737e;">/*
+</span><span style="color:#65737e;">  Put this inside the event loop of SDL, to render bgfx output
+</span><span style="color:#65737e;">  */
+</span><span>  bgfx::</span><span style="color:#8fa1b3;">frame</span><span>();
+</span><span>
+</span><span>
+</span><span>  </span><span style="color:#65737e;">/*
+</span><span style="color:#65737e;">  And put this just before SDL_Quit()
+</span><span style="color:#65737e;">  */
+</span><span>  bgfx::</span><span style="color:#8fa1b3;">shutdown</span><span>();
+</span><span>...
+</span><span>
+</span></code></pre>
+<p>You should see a pleasant purple being rendered in the window now.</p>
+<p><img src="/images/bgfx_tutorial2.png" alt="BGFX Render" /></p>
+<h2 id="vertices-and-indices">Vertices and Indices</h2>
+<p>If you went through the OpenGL tutorial linked above, you would know that getting a triangle on screen isn't as simple anymore. We need to define a few things before we can see any action on screen. These include:</p>
+<ol>
+<li>The <strong>vertex buffer</strong>: a list of 3d vertices that define what your 3d shape looks like in normalized space.</li>
+<li>The <strong>index buffer</strong>: a list of vertex indices that define which of the vertices in the vertex buffer form a triangle.</li>
+<li>A <strong>vertex and a fragment shader</strong> which compute how each of the vertices are renderered and colored on the screen.</li>
+<li>A <strong>vertex attribute declaration</strong> which translate what your vertex buffer means for the shaders.</li>
+</ol>
+<p>We know each of the vertices of the square would have a 3 points that denote where the vertex is in space, and lets also have a 4th variable that represents the color of the vertex. We hold these values in a struct and use <code>bgfx::VertexDecl</code> to define the vertex attribute declaration.</p>
+<pre data-lang="cpp" style="background-color:#2b303b;color:#c0c5ce;" class="language-cpp "><code class="language-cpp" data-lang="cpp"><span style="color:#b48ead;">struct </span><span>PosColorVertex {
+</span><span>    </span><span style="color:#65737e;">// 3d space position
+</span><span>    </span><span style="color:#b48ead;">float </span><span style="color:#bf616a;">m_x</span><span>;
+</span><span>    </span><span style="color:#b48ead;">float </span><span style="color:#bf616a;">m_y</span><span>;
+</span><span>    </span><span style="color:#b48ead;">float </span><span style="color:#bf616a;">m_z</span><span>;
+</span><span>    </span><span style="color:#65737e;">// Color value
+</span><span>    uint32_t </span><span style="color:#bf616a;">m_abgr</span><span>;
+</span><span>
+</span><span>    </span><span style="color:#b48ead;">static void </span><span style="color:#8fa1b3;">init</span><span>() {
+</span><span>        </span><span style="color:#65737e;">// start the attribute declaration
+</span><span>        ms_decl
+</span><span>            .</span><span style="color:#bf616a;">begin</span><span>()
+</span><span>            </span><span style="color:#65737e;">// Has three float values that denote position
+</span><span>            .</span><span style="color:#bf616a;">add</span><span>(bgfx::Attrib::Position, </span><span style="color:#d08770;">3</span><span>, bgfx::AttribType::Float)
+</span><span>            </span><span style="color:#65737e;">// and a uint8 color value that denotes color
+</span><span>            .</span><span style="color:#bf616a;">add</span><span>(bgfx::Attrib::Color0,   </span><span style="color:#d08770;">4</span><span>, bgfx::AttribType::Uint8, </span><span style="color:#d08770;">true</span><span>)
+</span><span>            .</span><span style="color:#bf616a;">end</span><span>();
+</span><span>    };
+</span><span>
+</span><span>    </span><span style="color:#b48ead;">static</span><span> bgfx::VertexDecl ms_decl;
+</span><span>};
+</span><span>
+</span><span>bgfx::VertexDecl PosColorVertex::ms_decl;
+</span></code></pre>
+<p>Lets define the vertices that form our square.</p>
+<pre data-lang="cpp" style="background-color:#2b303b;color:#c0c5ce;" class="language-cpp "><code class="language-cpp" data-lang="cpp"><span style="color:#b48ead;">static</span><span> PosColorVertex s_cubeVertices[] =
+</span><span>{
+</span><span>    {  </span><span style="color:#d08770;">0.5</span><span style="color:#b48ead;">f</span><span>,  </span><span style="color:#d08770;">0.5</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0xff0000ff </span><span>},
+</span><span>    {  </span><span style="color:#d08770;">0.5</span><span style="color:#b48ead;">f</span><span>, -</span><span style="color:#d08770;">0.5</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0xff0000ff </span><span>},
+</span><span>    { -</span><span style="color:#d08770;">0.5</span><span style="color:#b48ead;">f</span><span>, -</span><span style="color:#d08770;">0.5</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0xff00ff00 </span><span>},
+</span><span>    { -</span><span style="color:#d08770;">0.5</span><span style="color:#b48ead;">f</span><span>,  </span><span style="color:#d08770;">0.5</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0xff00ff00 </span><span>}
+</span><span>};
+</span></code></pre>
+<p>And the indexes of the vertices that form two triangles to make a square.</p>
+<pre data-lang="cpp" style="background-color:#2b303b;color:#c0c5ce;" class="language-cpp "><code class="language-cpp" data-lang="cpp"><span style="color:#b48ead;">static const </span><span>uint16_t s_cubeTriList[] =
+</span><span>{
+</span><span>    </span><span style="color:#d08770;">0</span><span>,</span><span style="color:#d08770;">1</span><span>,</span><span style="color:#d08770;">3</span><span>,
+</span><span>    </span><span style="color:#d08770;">1</span><span>,</span><span style="color:#d08770;">2</span><span>,</span><span style="color:#d08770;">3
+</span><span>};
+</span></code></pre>
+<p>We also need a <code>bgfx::VertexBufferHandle</code> variable to hold the actual vertex buffer and a <code>bgfx::IndexBufferHandle</code> variable to hold the index buffer.</p>
+<pre data-lang="cpp" style="background-color:#2b303b;color:#c0c5ce;" class="language-cpp "><code class="language-cpp" data-lang="cpp"><span>bgfx::VertexBufferHandle </span><span style="color:#bf616a;">m_vbh</span><span>;
+</span><span>bgfx::IndexBufferHandle </span><span style="color:#bf616a;">m_ibh</span><span>;
+</span></code></pre>
+<p>Now we need to initialize the vertex buffer handle and the index buffer handle with the vertices and triangle we have defined above. Put this after <code>bgfx::init()</code>.</p>
+<pre data-lang="cpp" style="background-color:#2b303b;color:#c0c5ce;" class="language-cpp "><code class="language-cpp" data-lang="cpp"><span>PosColorVertex::</span><span style="color:#8fa1b3;">init</span><span>();
+</span><span style="color:#bf616a;">m_vbh </span><span>= bgfx::</span><span style="color:#bf616a;">createVertexBuffer</span><span>(
+</span><span>            </span><span style="color:#65737e;">// Static data can be passed with bgfx::makeRef
+</span><span>            bgfx::</span><span style="color:#bf616a;">makeRef</span><span>(s_cubeVertices, sizeof(s_cubeVertices)),
+</span><span>            PosColorVertex::ms_decl
+</span><span>        );
+</span><span>
+</span><span style="color:#bf616a;">m_ibh </span><span>= bgfx::</span><span style="color:#bf616a;">createIndexBuffer</span><span>(
+</span><span>            </span><span style="color:#65737e;">// Static data can be passed with bgfx::makeRef
+</span><span>            bgfx::</span><span style="color:#bf616a;">makeRef</span><span>(s_cubeTriList, sizeof(s_cubeTriList))
+</span><span>        );
+</span></code></pre>
+<h2 id="shaders">Shaders</h2>
+<p>bgfx has a shader language very close to glsl with a few caveats. You can read about it on this <a href="https://bkaradzic.github.io/bgfx/tools.html#shader-compiler-shaderc">page</a>. We need a vertex shader and a fragment shader to render our square on the screen. Lets start with the vertex shader in a new file and name it <code>v_simple.sc</code>.</p>
+<pre data-lang="glsl" style="background-color:#2b303b;color:#c0c5ce;" class="language-glsl "><code class="language-glsl" data-lang="glsl"><span>$</span><span style="background-color:#bf616a;color:#2b303b;">input</span><span> a_position, a_color0
+</span><span>$</span><span style="background-color:#bf616a;color:#2b303b;">output</span><span> v_color0
+</span><span>
+</span><span style="color:#b48ead;">#include </span><span>&lt;</span><span style="color:#a3be8c;">bgfx_shader.sh</span><span>&gt;
+</span><span>
+</span><span style="color:#b48ead;">void </span><span style="color:#8fa1b3;">main</span><span>()
+</span><span>{
+</span><span>    </span><span style="color:#bf616a;">gl_Position </span><span>= </span><span style="color:#bf616a;">mul</span><span>(u_modelViewProj, </span><span style="color:#b48ead;">vec4</span><span>(a_position, </span><span style="color:#d08770;">1.0</span><span>) );
+</span><span>    v_color0 = a_color0;
+</span><span>}
+</span></code></pre>
+<p><code>bgfx_shader.sh</code> has many useful macros that we can use in our shaders. We use the <code>u_modelViewProj</code> variable from the file to get a projection of our position into the screen and we pass on the color as it is.</p>
+<p>Let's create a fragment shader and name it <code>f_simple.sc</code>.</p>
+<pre data-lang="glsl" style="background-color:#2b303b;color:#c0c5ce;" class="language-glsl "><code class="language-glsl" data-lang="glsl"><span>$</span><span style="background-color:#bf616a;color:#2b303b;">input</span><span> v_color0
+</span><span>
+</span><span style="color:#b48ead;">void </span><span style="color:#8fa1b3;">main</span><span>()
+</span><span>{
+</span><span>    </span><span style="color:#bf616a;">gl_FragColor </span><span>= v_color0;
+</span><span>}
+</span></code></pre>
+<p>The fragment shader just returns the color as it is.</p>
+<p>bgfx requires another file apart from just the vertex and fragment shaders called <code>varying.def.sc</code> which defines the input and output variables being used in these shaders. Lets create that as well.</p>
+<pre data-lang="glsl" style="background-color:#2b303b;color:#c0c5ce;" class="language-glsl "><code class="language-glsl" data-lang="glsl"><span style="color:#65737e;">// outputs
+</span><span style="color:#b48ead;">vec4</span><span> v_color0 : COLOR0;
+</span><span>
+</span><span style="color:#65737e;">// inputs
+</span><span style="color:#b48ead;">vec3</span><span> a_position : POSITION;
+</span><span style="color:#b48ead;">vec4</span><span> a_color0 : COLOR0;
+</span></code></pre>
+<p>Now we need to compile these shaders before we can use them with bgfx. The tool for that was built along with the bgfx library. You can find the tool <code>shadercRelease</code> in <code>bgfx/.build/linux64_gcc/bin</code>.</p>
+<p>Lets run the <code>shaderc</code> tool to create our compiled shader files.</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">./bgfx/.build/linux64_gcc/bin/shadercRelease </span><span>\
+</span><span style="color:#bf616a;">    -f</span><span> v_simple.sc \
+</span><span style="color:#bf616a;">    -o</span><span> v_simple.bin \
+</span><span style="color:#bf616a;">    --platform</span><span> linux \
+</span><span style="color:#bf616a;">    --type</span><span> vertex \
+</span><span style="color:#bf616a;">    --verbose </span><span>\
+</span><span style="color:#bf616a;">    -i</span><span> bgfx/src
+</span><span style="color:#bf616a;">./bgfx/.build/linux64_gcc/bin/shadercRelease </span><span>\
+</span><span style="color:#bf616a;">    -f</span><span> f_simple.sc \
+</span><span style="color:#bf616a;">    -o</span><span> f_simple.bin \
+</span><span style="color:#bf616a;">    --platform</span><span> linux \
+</span><span style="color:#bf616a;">    --type</span><span> fragment \
+</span><span style="color:#bf616a;">    --verbose </span><span>\
+</span><span style="color:#bf616a;">    -i</span><span> bgfx/src
+</span></code></pre>
+<p>We can add these lines to our make file as well so that the shaders are recompiled when we build.</p>
+<pre data-lang="make" style="background-color:#2b303b;color:#c0c5ce;" class="language-make "><code class="language-make" data-lang="make"><span style="color:#65737e;">#This is the target that compiles our executable
+</span><span style="color:#8fa1b3;">all </span><span>: </span><span style="color:#a3be8c;">main.cpp
+</span><span>    </span><span style="color:#bf616a;">./bgfx/.build/linux64_gcc/bin/shadercRelease </span><span>\
+</span><span style="color:#bf616a;">    -f</span><span> v_simple.sc \
+</span><span style="color:#bf616a;">    -o</span><span> v_simple.bin \
+</span><span style="color:#bf616a;">    --platform</span><span> linux \
+</span><span style="color:#bf616a;">    --type</span><span> vertex \
+</span><span style="color:#bf616a;">    --verbose </span><span>\
+</span><span style="color:#bf616a;">    -i</span><span> bgfx/src
+</span><span>    </span><span style="color:#bf616a;">./bgfx/.build/linux64_gcc/bin/shadercRelease </span><span>\
+</span><span style="color:#bf616a;">    -f</span><span> f_simple.sc \
+</span><span style="color:#bf616a;">    -o</span><span> f_simple.bin \
+</span><span style="color:#bf616a;">    --platform</span><span> linux \
+</span><span style="color:#bf616a;">    --type</span><span> fragment \
+</span><span style="color:#bf616a;">    --verbose </span><span>\
+</span><span style="color:#bf616a;">    -i</span><span> bgfx/src
+</span><span>    </span><span style="color:#b48ead;">$(</span><span style="color:#bf616a;">CC</span><span style="color:#b48ead;">) </span><span style="color:#bf616a;">main.cpp -o</span><span>  main </span><span style="color:#b48ead;">$(</span><span style="color:#bf616a;">COMPILER_FLAGS</span><span style="color:#b48ead;">) $(</span><span style="color:#bf616a;">LINKER_FLAGS</span><span style="color:#b48ead;">) $(</span><span style="color:#bf616a;">BGFX_HEADERS</span><span style="color:#b48ead;">)
+</span></code></pre>
+<p>Next up we want to load our shaders into memory and into <code>bgfx::ProgramHandle</code> so that we can use them to render our square.</p>
+<pre data-lang="cpp" style="background-color:#2b303b;color:#c0c5ce;" class="language-cpp "><code class="language-cpp" data-lang="cpp"><span style="color:#b48ead;">#include </span><span>&lt;</span><span style="color:#a3be8c;">fstream</span><span>&gt;
+</span><span>bgfx::ShaderHandle </span><span style="color:#8fa1b3;">loadShader</span><span>(</span><span style="color:#b48ead;">const char</span><span>* </span><span style="color:#bf616a;">_name</span><span>) {
+</span><span>    </span><span style="color:#b48ead;">char</span><span>* data = </span><span style="color:#b48ead;">new char</span><span>[</span><span style="color:#d08770;">2048</span><span>];
+</span><span>    std::ifstream file;
+</span><span>    size_t fileSize
+</span><span>    file.</span><span style="color:#bf616a;">open</span><span>(_name);
+</span><span>    </span><span style="color:#b48ead;">if</span><span>(file.</span><span style="color:#bf616a;">is_open</span><span>()) {
+</span><span>        file.</span><span style="color:#bf616a;">seekg</span><span>(</span><span style="color:#d08770;">0</span><span>, std::ios::end);
+</span><span>        fileSize = file.</span><span style="color:#bf616a;">tellg</span><span>();
+</span><span>        file.</span><span style="color:#bf616a;">seekg</span><span>(</span><span style="color:#d08770;">0</span><span>, std::ios::beg);
+</span><span>        file.</span><span style="color:#bf616a;">read</span><span>(data, fileSize);
+</span><span>        file.</span><span style="color:#bf616a;">close</span><span>();
+</span><span>    }
+</span><span>    </span><span style="color:#b48ead;">const</span><span> bgfx::Memory* mem = bgfx::</span><span style="color:#bf616a;">copy</span><span>(data,fileSize+</span><span style="color:#d08770;">1</span><span>);
+</span><span>    mem-&gt;</span><span style="color:#bf616a;">data</span><span>[mem-&gt;</span><span style="color:#bf616a;">size</span><span>-</span><span style="color:#d08770;">1</span><span>] = &#39;</span><span style="color:#96b5b4;">\0</span><span>&#39;;
+</span><span>    bgfx::ShaderHandle handle = bgfx::</span><span style="color:#bf616a;">createShader</span><span>(mem);
+</span><span>    bgfx::</span><span style="color:#bf616a;">setName</span><span>(handle, _name);
+</span><span>    </span><span style="color:#b48ead;">return</span><span> handle;
+</span><span>}
+</span><span>
+</span><span>bgfx::VertexBufferHandle </span><span style="color:#bf616a;">m_vbh</span><span>;
+</span><span>bgfx::IndexBufferHandle </span><span style="color:#bf616a;">m_ibh</span><span>;
+</span><span>bgfx::ProgramHandle </span><span style="color:#bf616a;">m_program</span><span>; </span><span style="color:#65737e;">// we create a program handle
+</span><span>
+</span><span>...
+</span><span>    </span><span style="color:#65737e;">// after creating the vertex and index buffers
+</span><span>    </span><span style="color:#65737e;">// we initialize our programhandle
+</span><span>    bgfx::ShaderHandle vsh = </span><span style="color:#bf616a;">loadShader</span><span>(&quot;</span><span style="color:#a3be8c;">v_simple.bin</span><span>&quot;);
+</span><span>    bgfx::ShaderHandle fsh = </span><span style="color:#bf616a;">loadShader</span><span>(&quot;</span><span style="color:#a3be8c;">f_simple.bin</span><span>&quot;);
+</span><span>    </span><span style="color:#bf616a;">m_program </span><span>= bgfx::</span><span style="color:#bf616a;">createProgram</span><span>(vsh,fsh,  </span><span style="color:#d08770;">true</span><span>);
+</span><span>...
+</span><span>
+</span></code></pre>
+<p>We're so close. We have everything we need to start rendering a square on the screen. We need to define where the camera is and where it is looking at.</p>
+<pre data-lang="cpp" style="background-color:#2b303b;color:#c0c5ce;" class="language-cpp "><code class="language-cpp" data-lang="cpp"><span style="color:#b48ead;">#include </span><span>&lt;</span><span style="color:#a3be8c;">bx/math.h</span><span>&gt;
+</span><span>
+</span><span style="color:#65737e;">// inside the while loop
+</span><span>
+</span><span style="color:#b48ead;">const</span><span> bx::Vec3 at  = { </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>,   </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f </span><span>};
+</span><span style="color:#b48ead;">const</span><span> bx::Vec3 eye = { </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">10.0</span><span style="color:#b48ead;">f </span><span>};
+</span><span>
+</span><span style="color:#65737e;">// Set view and projection matrix for view 0.
+</span><span style="color:#b48ead;">float</span><span> view[</span><span style="color:#d08770;">16</span><span>];
+</span><span>bx::</span><span style="color:#8fa1b3;">mtxLookAt</span><span>(</span><span style="color:#bf616a;">view</span><span>, </span><span style="color:#bf616a;">eye</span><span>, </span><span style="color:#bf616a;">at</span><span>);
+</span><span>
+</span><span style="color:#b48ead;">float</span><span> proj[</span><span style="color:#d08770;">16</span><span>];
+</span><span>bx::</span><span style="color:#8fa1b3;">mtxProj</span><span>(</span><span style="color:#bf616a;">proj</span><span>,
+</span><span>            </span><span style="color:#d08770;">60.0</span><span style="color:#b48ead;">f</span><span>,
+</span><span>            </span><span style="color:#b48ead;">float</span><span>(WIDTH)/</span><span style="color:#b48ead;">float</span><span>(HEIGHT),
+</span><span>            </span><span style="color:#d08770;">0.1</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">100.0</span><span style="color:#b48ead;">f</span><span>,
+</span><span>            bgfx::</span><span style="color:#bf616a;">getCaps</span><span>()-&gt;</span><span style="color:#bf616a;">homogeneousDepth</span><span>);
+</span><span>
+</span><span>bgfx::</span><span style="color:#8fa1b3;">setViewTransform</span><span>(</span><span style="color:#d08770;">0</span><span>, </span><span style="color:#bf616a;">view</span><span>, </span><span style="color:#bf616a;">proj</span><span>);
+</span><span>
+</span><span style="color:#65737e;">// Set view 0 default viewport.
+</span><span>bgfx::</span><span style="color:#8fa1b3;">setViewRect</span><span>(</span><span style="color:#d08770;">0</span><span>, </span><span style="color:#d08770;">0</span><span>, </span><span style="color:#d08770;">0</span><span>,
+</span><span>                  </span><span style="color:#bf616a;">WIDTH</span><span>,
+</span><span>                  </span><span style="color:#bf616a;">HEIGHT</span><span>);
+</span><span>
+</span><span>bgfx::</span><span style="color:#8fa1b3;">touch</span><span>(</span><span style="color:#d08770;">0</span><span>);
+</span><span>
+</span></code></pre>
+<p>Next we define a 4x4 matrix that defines where our square is going to be and what orientation it is at. We also set the index and vertex buffer handles and then submit the drawing with the program.</p>
+<pre data-lang="cpp" style="background-color:#2b303b;color:#c0c5ce;" class="language-cpp "><code class="language-cpp" data-lang="cpp"><span>
+</span><span style="color:#b48ead;">float</span><span> mtx[</span><span style="color:#d08770;">16</span><span>];
+</span><span>bx::</span><span style="color:#8fa1b3;">mtxRotateY</span><span>(</span><span style="color:#bf616a;">mtx</span><span>, </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>);
+</span><span>
+</span><span style="color:#65737e;">// position x,y,z
+</span><span>mtx[</span><span style="color:#d08770;">12</span><span>] = </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>;
+</span><span>mtx[</span><span style="color:#d08770;">13</span><span>] = </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>;
+</span><span>mtx[</span><span style="color:#d08770;">14</span><span>] = </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>;
+</span><span>
+</span><span style="color:#65737e;">// Set model matrix for rendering.
+</span><span>bgfx::</span><span style="color:#8fa1b3;">setTransform</span><span>(</span><span style="color:#bf616a;">mtx</span><span>);
+</span><span>
+</span><span style="color:#65737e;">// Set vertex and index buffer.
+</span><span>bgfx::</span><span style="color:#8fa1b3;">setVertexBuffer</span><span>(</span><span style="color:#d08770;">0</span><span>, </span><span style="color:#bf616a;">m_vbh</span><span>);
+</span><span>bgfx::</span><span style="color:#8fa1b3;">setIndexBuffer</span><span>(</span><span style="color:#bf616a;">m_ibh</span><span>);
+</span><span>
+</span><span style="color:#65737e;">// Set render states.
+</span><span>bgfx::</span><span style="color:#8fa1b3;">setState</span><span>(</span><span style="color:#bf616a;">BGFX_STATE_DEFAULT</span><span>);
+</span><span>
+</span><span style="color:#65737e;">// Submit primitive for rendering to view 0.
+</span><span>bgfx::</span><span style="color:#8fa1b3;">submit</span><span>(</span><span style="color:#d08770;">0</span><span>, </span><span style="color:#bf616a;">m_program</span><span>);
+</span><span>
+</span><span>bgfx::</span><span style="color:#8fa1b3;">frame</span><span>();
+</span><span>
+</span></code></pre>
+<p>And thats it! Make and run and you would see a square with a horizontal gradient of red to green.</p>
+<p><img src="/images/bgfx_tutorial3.png" alt="A Square" /></p>
+<p>This is the whole <code>main.cpp</code> program.</p>
+<pre data-lang="cpp" style="background-color:#2b303b;color:#c0c5ce;" class="language-cpp "><code class="language-cpp" data-lang="cpp"><span style="color:#b48ead;">#include </span><span>&lt;</span><span style="color:#a3be8c;">stdio.h</span><span>&gt;
+</span><span style="color:#b48ead;">#include </span><span>&lt;</span><span style="color:#a3be8c;">SDL2/SDL.h</span><span>&gt;
+</span><span style="color:#b48ead;">#include </span><span>&lt;</span><span style="color:#a3be8c;">bgfx/bgfx.h</span><span>&gt;
+</span><span style="color:#b48ead;">#include </span><span>&lt;</span><span style="color:#a3be8c;">bgfx/platform.h</span><span>&gt;
+</span><span style="color:#b48ead;">#include </span><span>&lt;</span><span style="color:#a3be8c;">SDL2/SDL_syswm.h</span><span>&gt;
+</span><span style="color:#b48ead;">#include </span><span>&lt;</span><span style="color:#a3be8c;">fstream</span><span>&gt;
+</span><span style="color:#b48ead;">#include </span><span>&lt;</span><span style="color:#a3be8c;">bx/math.h</span><span>&gt;
+</span><span>
+</span><span>
+</span><span>SDL_Window* window = </span><span style="color:#d08770;">NULL</span><span>;
+</span><span style="color:#b48ead;">const int</span><span> WIDTH = </span><span style="color:#d08770;">640</span><span>;
+</span><span style="color:#b48ead;">const int</span><span> HEIGHT = </span><span style="color:#d08770;">480</span><span>;
+</span><span>
+</span><span>bgfx::ShaderHandle </span><span style="color:#8fa1b3;">loadShader</span><span>(</span><span style="color:#b48ead;">const char</span><span>* </span><span style="color:#bf616a;">_name</span><span>) {
+</span><span>    </span><span style="color:#b48ead;">char</span><span>* data = </span><span style="color:#b48ead;">new char</span><span>[</span><span style="color:#d08770;">2048</span><span>];
+</span><span>    std::ifstream file;
+</span><span>    size_t fileSize;
+</span><span>    file.</span><span style="color:#bf616a;">open</span><span>(_name);
+</span><span>    </span><span style="color:#b48ead;">if</span><span>(file.</span><span style="color:#bf616a;">is_open</span><span>()) {
+</span><span>        file.</span><span style="color:#bf616a;">seekg</span><span>(</span><span style="color:#d08770;">0</span><span>, std::ios::end);
+</span><span>        fileSize = file.</span><span style="color:#bf616a;">tellg</span><span>();
+</span><span>        file.</span><span style="color:#bf616a;">seekg</span><span>(</span><span style="color:#d08770;">0</span><span>, std::ios::beg);
+</span><span>        file.</span><span style="color:#bf616a;">read</span><span>(data, fileSize);
+</span><span>        file.</span><span style="color:#bf616a;">close</span><span>();
+</span><span>    }
+</span><span>    </span><span style="color:#b48ead;">const</span><span> bgfx::Memory* mem = bgfx::</span><span style="color:#bf616a;">copy</span><span>(data,fileSize+</span><span style="color:#d08770;">1</span><span>);
+</span><span>    mem-&gt;</span><span style="color:#bf616a;">data</span><span>[mem-&gt;</span><span style="color:#bf616a;">size</span><span>-</span><span style="color:#d08770;">1</span><span>] = &#39;</span><span style="color:#96b5b4;">\0</span><span>&#39;;
+</span><span>    bgfx::ShaderHandle handle = bgfx::</span><span style="color:#bf616a;">createShader</span><span>(mem);
+</span><span>    bgfx::</span><span style="color:#bf616a;">setName</span><span>(handle, _name);
+</span><span>    </span><span style="color:#b48ead;">return</span><span> handle;
+</span><span>}
+</span><span>
+</span><span style="color:#b48ead;">struct </span><span>PosColorVertex {
+</span><span>  </span><span style="color:#b48ead;">float </span><span style="color:#bf616a;">m_x</span><span>;
+</span><span>  </span><span style="color:#b48ead;">float </span><span style="color:#bf616a;">m_y</span><span>;
+</span><span>  </span><span style="color:#b48ead;">float </span><span style="color:#bf616a;">m_z</span><span>;
+</span><span>  uint32_t </span><span style="color:#bf616a;">m_abgr</span><span>;
+</span><span>
+</span><span>  </span><span style="color:#b48ead;">static void </span><span style="color:#8fa1b3;">init</span><span>() {
+</span><span>    ms_decl
+</span><span>      .</span><span style="color:#bf616a;">begin</span><span>()
+</span><span>      .</span><span style="color:#bf616a;">add</span><span>(bgfx::Attrib::Position, </span><span style="color:#d08770;">3</span><span>, bgfx::AttribType::Float)
+</span><span>      .</span><span style="color:#bf616a;">add</span><span>(bgfx::Attrib::Color0,   </span><span style="color:#d08770;">4</span><span>, bgfx::AttribType::Uint8, </span><span style="color:#d08770;">true</span><span>)
+</span><span>      .</span><span style="color:#bf616a;">end</span><span>();
+</span><span>  };
+</span><span>
+</span><span>  </span><span style="color:#b48ead;">static</span><span> bgfx::VertexDecl ms_decl;
+</span><span>};
+</span><span>
+</span><span>
+</span><span>bgfx::VertexDecl PosColorVertex::ms_decl;
+</span><span>
+</span><span style="color:#b48ead;">static</span><span> PosColorVertex s_cubeVertices[] =
+</span><span>  {
+</span><span>   {  </span><span style="color:#d08770;">0.5</span><span style="color:#b48ead;">f</span><span>,  </span><span style="color:#d08770;">0.5</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0xff0000ff </span><span>},
+</span><span>   {  </span><span style="color:#d08770;">0.5</span><span style="color:#b48ead;">f</span><span>, -</span><span style="color:#d08770;">0.5</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0xff0000ff </span><span>},
+</span><span>   { -</span><span style="color:#d08770;">0.5</span><span style="color:#b48ead;">f</span><span>, -</span><span style="color:#d08770;">0.5</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0xff00ff00 </span><span>},
+</span><span>   { -</span><span style="color:#d08770;">0.5</span><span style="color:#b48ead;">f</span><span>,  </span><span style="color:#d08770;">0.5</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0xff00ff00 </span><span>}
+</span><span>  };
+</span><span>
+</span><span>
+</span><span style="color:#b48ead;">static const </span><span>uint16_t s_cubeTriList[] =
+</span><span>  {
+</span><span>   </span><span style="color:#d08770;">0</span><span>,</span><span style="color:#d08770;">1</span><span>,</span><span style="color:#d08770;">3</span><span>,
+</span><span>   </span><span style="color:#d08770;">1</span><span>,</span><span style="color:#d08770;">2</span><span>,</span><span style="color:#d08770;">3
+</span><span>  };
+</span><span>
+</span><span>bgfx::VertexBufferHandle </span><span style="color:#bf616a;">m_vbh</span><span>;
+</span><span>bgfx::IndexBufferHandle </span><span style="color:#bf616a;">m_ibh</span><span>;
+</span><span>bgfx::ProgramHandle </span><span style="color:#bf616a;">m_program</span><span>;
+</span><span>
+</span><span style="color:#b48ead;">int </span><span style="color:#8fa1b3;">main </span><span>(</span><span style="color:#b48ead;">int </span><span style="color:#bf616a;">argc</span><span>, </span><span style="color:#b48ead;">char</span><span>* </span><span style="color:#bf616a;">args</span><span>[]) {
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Initialize SDL systems
+</span><span>  </span><span style="color:#b48ead;">if</span><span>(</span><span style="color:#bf616a;">SDL_Init</span><span>( SDL_INIT_VIDEO ) &lt; </span><span style="color:#d08770;">0</span><span>) {
+</span><span>    </span><span style="color:#96b5b4;">printf</span><span>(&quot;</span><span style="color:#a3be8c;">SDL could not initialize! SDL_Error: </span><span style="color:#d08770;">%s</span><span style="color:#96b5b4;">\n</span><span>&quot;,
+</span><span>           </span><span style="color:#bf616a;">SDL_GetError</span><span>());
+</span><span>  }
+</span><span>  </span><span style="color:#b48ead;">else </span><span>{
+</span><span>    </span><span style="color:#65737e;">//Create a window
+</span><span>    window = </span><span style="color:#bf616a;">SDL_CreateWindow</span><span>(&quot;</span><span style="color:#a3be8c;">BGFX Tutorial</span><span>&quot;,
+</span><span>                              SDL_WINDOWPOS_UNDEFINED,
+</span><span>                              SDL_WINDOWPOS_UNDEFINED,
+</span><span>                              WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
+</span><span>    </span><span style="color:#b48ead;">if</span><span>( window == </span><span style="color:#d08770;">NULL </span><span>) {
+</span><span>      </span><span style="color:#96b5b4;">printf</span><span>(&quot;</span><span style="color:#a3be8c;">Window could not be created! SDL_Error: </span><span style="color:#d08770;">%s</span><span style="color:#96b5b4;">\n</span><span>&quot;,
+</span><span>             </span><span style="color:#bf616a;">SDL_GetError</span><span>());
+</span><span>    }
+</span><span>  }
+</span><span>
+</span><span>  SDL_SysWMinfo wmi;
+</span><span>  </span><span style="color:#bf616a;">SDL_VERSION</span><span>(&amp;wmi.</span><span style="color:#bf616a;">version</span><span>);
+</span><span>  </span><span style="color:#b48ead;">if </span><span>(!</span><span style="color:#bf616a;">SDL_GetWindowWMInfo</span><span>(window, &amp;wmi)) {
+</span><span>    </span><span style="color:#b48ead;">return </span><span style="color:#d08770;">1</span><span>;
+</span><span>  }
+</span><span>
+</span><span>  bgfx::PlatformData pd;
+</span><span>  </span><span style="color:#65737e;">// and give the pointer to the window to pd
+</span><span>  pd.</span><span style="color:#bf616a;">ndt </span><span>= wmi.</span><span style="color:#bf616a;">info</span><span>.</span><span style="color:#bf616a;">x11</span><span>.</span><span style="color:#bf616a;">display</span><span>;
+</span><span>  pd.</span><span style="color:#bf616a;">nwh </span><span>= (</span><span style="color:#b48ead;">void</span><span>*)(uintptr_t)wmi.</span><span style="color:#bf616a;">info</span><span>.</span><span style="color:#bf616a;">x11</span><span>.</span><span style="color:#bf616a;">window</span><span>;
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Tell bgfx about the platform and window
+</span><span>  bgfx::</span><span style="color:#bf616a;">setPlatformData</span><span>(pd);
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Render an empty frame
+</span><span>  bgfx::</span><span style="color:#bf616a;">renderFrame</span><span>();
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Initialize bgfx
+</span><span>  bgfx::</span><span style="color:#bf616a;">init</span><span>();
+</span><span>
+</span><span>  PosColorVertex::</span><span style="color:#bf616a;">init</span><span>();
+</span><span>  </span><span style="color:#bf616a;">m_vbh </span><span>= bgfx::</span><span style="color:#bf616a;">createVertexBuffer</span><span>(
+</span><span>              </span><span style="color:#65737e;">// Static data can be passed with bgfx::makeRef
+</span><span>              bgfx::</span><span style="color:#bf616a;">makeRef</span><span>(s_cubeVertices, sizeof(s_cubeVertices)),
+</span><span>              PosColorVertex::ms_decl
+</span><span>          );
+</span><span>
+</span><span>  </span><span style="color:#bf616a;">m_ibh </span><span>= bgfx::</span><span style="color:#bf616a;">createIndexBuffer</span><span>(
+</span><span>              </span><span style="color:#65737e;">// Static data can be passed with bgfx::makeRef
+</span><span>              bgfx::</span><span style="color:#bf616a;">makeRef</span><span>(s_cubeTriList, sizeof(s_cubeTriList))
+</span><span>          );
+</span><span>
+</span><span>  bgfx::ShaderHandle vsh = </span><span style="color:#bf616a;">loadShader</span><span>(&quot;</span><span style="color:#a3be8c;">v_simple.bin</span><span>&quot;);
+</span><span>  bgfx::ShaderHandle fsh = </span><span style="color:#bf616a;">loadShader</span><span>(&quot;</span><span style="color:#a3be8c;">f_simple.bin</span><span>&quot;);
+</span><span>
+</span><span>  </span><span style="color:#bf616a;">m_program </span><span>= bgfx::</span><span style="color:#bf616a;">createProgram</span><span>(vsh,fsh,  </span><span style="color:#d08770;">true</span><span>);
+</span><span>
+</span><span>
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Reset window
+</span><span>  bgfx::</span><span style="color:#bf616a;">reset</span><span>(WIDTH, HEIGHT, BGFX_RESET_VSYNC);
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Enable debug text.
+</span><span>  bgfx::</span><span style="color:#bf616a;">setDebug</span><span>(BGFX_DEBUG_TEXT </span><span style="color:#65737e;">/*| BGFX_DEBUG_STATS*/</span><span>);
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Set view rectangle for 0th view
+</span><span>  bgfx::</span><span style="color:#bf616a;">setViewRect</span><span>(</span><span style="color:#d08770;">0</span><span>, </span><span style="color:#d08770;">0</span><span>, </span><span style="color:#d08770;">0</span><span>, uint16_t(WIDTH), uint16_t(HEIGHT));
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Clear the view rect
+</span><span>  bgfx::</span><span style="color:#bf616a;">setViewClear</span><span>(</span><span style="color:#d08770;">0</span><span>,
+</span><span>                     BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH,
+</span><span>                     </span><span style="color:#d08770;">0x443355FF</span><span>, </span><span style="color:#d08770;">1.0</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0</span><span>);
+</span><span>
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Set empty primitive on screen
+</span><span>  bgfx::</span><span style="color:#bf616a;">touch</span><span>(</span><span style="color:#d08770;">0</span><span>);
+</span><span>
+</span><span>  </span><span style="color:#65737e;">// Poll for events and wait till user closes window
+</span><span>  </span><span style="color:#b48ead;">bool</span><span> quit = </span><span style="color:#d08770;">false</span><span>;
+</span><span>  SDL_Event currentEvent;
+</span><span>  </span><span style="color:#b48ead;">while</span><span>(!quit) {
+</span><span>    </span><span style="color:#b48ead;">while</span><span>(</span><span style="color:#bf616a;">SDL_PollEvent</span><span>(&amp;currentEvent) != </span><span style="color:#d08770;">0</span><span>) {
+</span><span>      </span><span style="color:#b48ead;">if</span><span>(currentEvent.</span><span style="color:#bf616a;">type </span><span>== SDL_QUIT) {
+</span><span>        quit = </span><span style="color:#d08770;">true</span><span>;
+</span><span>      }
+</span><span>
+</span><span>      </span><span style="color:#b48ead;">const</span><span> bx::Vec3 at  = { </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>,   </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f </span><span>};
+</span><span>      </span><span style="color:#b48ead;">const</span><span> bx::Vec3 eye = { </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">10.0</span><span style="color:#b48ead;">f </span><span>};
+</span><span>
+</span><span>      </span><span style="color:#65737e;">// Set view and projection matrix for view 0.
+</span><span>      </span><span style="color:#b48ead;">float</span><span> view[</span><span style="color:#d08770;">16</span><span>];
+</span><span>      bx::</span><span style="color:#bf616a;">mtxLookAt</span><span>(view, eye, at);
+</span><span>
+</span><span>      </span><span style="color:#b48ead;">float</span><span> proj[</span><span style="color:#d08770;">16</span><span>];
+</span><span>      bx::</span><span style="color:#bf616a;">mtxProj</span><span>(proj,
+</span><span>                  </span><span style="color:#d08770;">60.0</span><span style="color:#b48ead;">f</span><span>,
+</span><span>                  </span><span style="color:#b48ead;">float</span><span>(WIDTH)/</span><span style="color:#b48ead;">float</span><span>(HEIGHT),
+</span><span>                  </span><span style="color:#d08770;">0.1</span><span style="color:#b48ead;">f</span><span>, </span><span style="color:#d08770;">100.0</span><span style="color:#b48ead;">f</span><span>,
+</span><span>                  bgfx::</span><span style="color:#bf616a;">getCaps</span><span>()-&gt;</span><span style="color:#bf616a;">homogeneousDepth</span><span>);
+</span><span>
+</span><span>      bgfx::</span><span style="color:#bf616a;">setViewTransform</span><span>(</span><span style="color:#d08770;">0</span><span>, view, proj);
+</span><span>
+</span><span>      </span><span style="color:#65737e;">// Set view 0 default viewport.
+</span><span>      bgfx::</span><span style="color:#bf616a;">setViewRect</span><span>(</span><span style="color:#d08770;">0</span><span>, </span><span style="color:#d08770;">0</span><span>, </span><span style="color:#d08770;">0</span><span>,
+</span><span>                        WIDTH,
+</span><span>                        HEIGHT);
+</span><span>
+</span><span>      bgfx::</span><span style="color:#bf616a;">touch</span><span>(</span><span style="color:#d08770;">0</span><span>);
+</span><span>
+</span><span>
+</span><span>      </span><span style="color:#b48ead;">float</span><span> mtx[</span><span style="color:#d08770;">16</span><span>];
+</span><span>      bx::</span><span style="color:#bf616a;">mtxRotateY</span><span>(mtx, </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>);
+</span><span>
+</span><span>      </span><span style="color:#65737e;">// position x,y,z
+</span><span>      mtx[</span><span style="color:#d08770;">12</span><span>] = </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>;
+</span><span>      mtx[</span><span style="color:#d08770;">13</span><span>] = </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>;
+</span><span>      mtx[</span><span style="color:#d08770;">14</span><span>] = </span><span style="color:#d08770;">0.0</span><span style="color:#b48ead;">f</span><span>;
+</span><span>
+</span><span>      </span><span style="color:#65737e;">// Set model matrix for rendering.
+</span><span>      bgfx::</span><span style="color:#bf616a;">setTransform</span><span>(mtx);
+</span><span>
+</span><span>      </span><span style="color:#65737e;">// Set vertex and index buffer.
+</span><span>      bgfx::</span><span style="color:#bf616a;">setVertexBuffer</span><span>(</span><span style="color:#d08770;">0</span><span>, </span><span style="color:#bf616a;">m_vbh</span><span>);
+</span><span>      bgfx::</span><span style="color:#bf616a;">setIndexBuffer</span><span>(</span><span style="color:#bf616a;">m_ibh</span><span>);
+</span><span>
+</span><span>      </span><span style="color:#65737e;">// Set render states.
+</span><span>      bgfx::</span><span style="color:#bf616a;">setState</span><span>(BGFX_STATE_DEFAULT);
+</span><span>
+</span><span>      </span><span style="color:#65737e;">// Submit primitive for rendering to view 0.
+</span><span>      bgfx::</span><span style="color:#bf616a;">submit</span><span>(</span><span style="color:#d08770;">0</span><span>, </span><span style="color:#bf616a;">m_program</span><span>);
+</span><span>
+</span><span>      bgfx::</span><span style="color:#bf616a;">frame</span><span>();
+</span><span>    }
+</span><span>  }
+</span><span>
+</span><span>  bgfx::</span><span style="color:#bf616a;">shutdown</span><span>();
+</span><span>  </span><span style="color:#65737e;">// Free up window
+</span><span>  </span><span style="color:#bf616a;">SDL_DestroyWindow</span><span>(window);
+</span><span>  </span><span style="color:#65737e;">// Shutdown SDL
+</span><span>  </span><span style="color:#bf616a;">SDL_Quit</span><span>();
+</span><span>
+</span><span>  </span><span style="color:#b48ead;">return </span><span style="color:#d08770;">0</span><span>;
+</span><span>}
+</span><span>
+</span></code></pre>
+<p>This program is a direct subversion of the cubes example from the <a href="https://bkaradzic.github.io/bgfx/examples.html">examples</a> list in the bgfx docs. I had to dig in to really make sense of how the shaders needed to be and how to set up the camera. I hope that integrating bgfx on Ubuntu would be an easier task for you now. Between the examples and the docs, it is fairly easy to figure out the corresponding steps for other platforms. You can find the full repository of this tutorial at <a href="https://github.com/gamedolphin/bgfx-sample">Github</a>.</p>
+<p>Happy Coding!</p>
+
+
+            </main>
+            <footer>
+                
+
+<p class="taxonomies">
+
+
+<a href="/tags/bgfx">#bgfx</a>
+
+<a href="/tags/c">#c++</a>
+
+<a href="/tags/3d">#3d</a>
+
+<a href="/tags/renderer">#renderer</a>
+
+<a href="/tags/opengl">#opengl</a>
+
+
+
+
+</p>
+
+  
+  <script src="https://giscus.app/client.js"
+        data-repo="gamedolphin/gamedolphin.github.com"
+        data-repo-id="R_kgDOMgpr2g"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOMgpr2s4ChgX6"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="noborder_gray"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+  </script>
+  
+
+                
+                <nav>
+                    
+                    <a href="https://calculating-cat.pikapod.net/share/uOgHMhM18K3kAuga/www.sandeepnambiar.com">Analytics</a>
+                    
+                </nav>
+                
+            </footer>
+        </div>
+    </body>
+</html>
+        

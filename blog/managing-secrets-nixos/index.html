@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+        <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
+        <meta content="width=device-width, initial-scale=1" name="viewport"/>
+
+        
+        
+        
+
+        
+
+        
+        
+        
+
+        
+
+        
+        
+        
+
+        <title>Managing Secrets in Nixos with Sops</title>
+        
+        <meta name="title" content="Managing Secrets in Nixos with Sops">
+        
+        <meta name="description" content="Sandeep Nambiar&#x27;s personal website">
+        <meta name="generator" content="Zola v0.16.1">
+
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://www.sandeepnambiar.com/blog/managing-secrets-nixos/">
+        <meta property="og:site_name" content="Sandeep Nambiar">
+        <meta property="og:title" content="Managing Secrets in Nixos with Sops">
+        <meta property="og:description" content="Sandeep Nambiar&#x27;s personal website">
+        
+
+        
+        
+        <meta property="twitter:card" content="summary_large_image">
+        <meta property="twitter:url" content="https://www.sandeepnambiar.com/blog/managing-secrets-nixos/">
+        <meta property="twitter:title" content="Managing Secrets in Nixos with Sops">
+        <meta property="twitter:description" content="Sandeep Nambiar&#x27;s personal website">
+        
+        
+        
+        <link rel="canonical" href="https://www.sandeepnambiar.com/blog/managing-secrets-nixos/">
+        
+        <script type="application/ld+json">
+            {
+                "description":"Sandeep Nambiar's personal website",
+                "url":"https://www.sandeepnambiar.com/blog/managing-secrets-nixos/",
+                "@type":"WebSite",
+                "headline":"Managing Secrets in Nixos with Sops",
+                "name":"Managing Secrets in Nixos with Sops",
+                
+                "@context":"https://schema.org"
+            }
+        </script>
+        
+        
+        
+
+        <link rel="stylesheet" href="https://www.sandeepnambiar.com/style.css"/>
+        
+<script defer src="https://calculating-cat.pikapod.net/script.js" data-website-id="e274bd34-543a-448b-aead-5e91046e37b0"></script>
+
+    </head>
+    <body theme="auto">
+        <div class="w">
+            <header>
+                
+                
+<p><a href="..">..</a>/managing-secrets-nixos</p>
+<p class="post-meta"><time datetime="2025-01-16">2025-01-16</time></p>
+<h1>Managing Secrets in Nixos with Sops</h1>
+
+            </header>
+            <main class="page-content" aria-label="Content">
+                
+
+
+
+<p>I use a bunch of &quot;secret&quot; keys on my computer. A good example is the <a href="https://claude.ai">Anthropic Claude</a> LLM API key that lets me talk to Claude through emacs's <a href="https://github.com/karthink/gptel">gptel</a> plugin. But if I am setting up a new computer, or moving between workstations, I need to manually copy the key over to its expected location. If I could just commit the secrets to the literate system configuration that I maintain, I can just git pull and have the key on the other computer, ready to use. I can also version control my secrets!</p>
+<p>But of course, you do not want to commit secret api keys into a git repository! Thats where sops and its integration with nixos, <a href="https://github.com/Mic92/sops-nix">sops-nix</a> comes in!
+Sops allows you to encrypt your secrets and push them up like any other file. Only you can decrypt them and use them.</p>
+<blockquote>
+<p><strong>⚠️ Security Note:</strong>
+The security of this approach depends entirely on keeping your encryption key safe. Never commit unencrypted keys or share them insecurely.</p>
+<p>While this method is convenient, the most secure approach is keeping secrets completely separate from public repositories.</p>
+</blockquote>
+<p>So, how do you integrate sops on nixos? I think the nix-sops github <a href="https://github.com/Mic92/sops-nix/blob/master/README.md#usage-example">README</a> has a very good tutorial which you can go through. But I'll outline the steps I did for my own setup.</p>
+<h2 id="adding-sops-nix-to-the-configuration">Adding sops-nix to the configuration</h2>
+<p>This is the easy step. Add <code>sops-nix</code> as an input, and add the provided module to your list of modules.</p>
+<pre data-lang="nix" style="background-color:#2b303b;color:#c0c5ce;" class="language-nix "><code class="language-nix" data-lang="nix"><span>{
+</span><span>    </span><span style="color:#d08770;">inputs</span><span>.</span><span style="color:#d08770;">sops-nix</span><span>.</span><span style="color:#d08770;">url </span><span>= &quot;</span><span style="color:#a3be8c;">github:Mic92/sops-nix</span><span>&quot;;
+</span><span>
+</span><span>    </span><span style="color:#d08770;">outputs </span><span>= </span><span style="color:#8fa1b3;">{ </span><span>self, nixpkgs, sops-nix </span><span style="color:#8fa1b3;">}</span><span>: {
+</span><span>        </span><span style="color:#d08770;">nixosConfigurations</span><span>.</span><span style="font-style:italic;color:#ab7967;">${</span><span style="font-style:italic;color:#bf616a;">hostname</span><span style="font-style:italic;color:#ab7967;">} </span><span>= </span><span style="color:#bf616a;">nixpkgs</span><span>.</span><span style="color:#bf616a;">lib</span><span>.</span><span style="color:#bf616a;">nixosSystem </span><span>{
+</span><span>            </span><span style="color:#b48ead;">inherit </span><span style="color:#d08770;">system</span><span>;
+</span><span>            </span><span style="color:#d08770;">modules </span><span>= [
+</span><span>                </span><span style="color:#65737e;"># rest of your modules
+</span><span>                </span><span style="color:#65737e;"># ...
+</span><span>                </span><span style="color:#bf616a;">sops-nix</span><span>.</span><span style="color:#bf616a;">nixosModules</span><span>.</span><span style="color:#bf616a;">sops
+</span><span>            ];
+</span><span>        };
+</span><span>    };
+</span><span>}
+</span></code></pre>
+<h2 id="generate-encryption-key">Generate encryption key</h2>
+<p>Next, we need to generate a key that we will use to encrypt our secrets. This can piggy-back on top of your existing ssh key, but I decided to generate my own using age. On nixos, getting the <code>age-keygen</code> command was as simple as <code>nix-shell -p age</code></p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span>    </span><span style="color:#bf616a;">mkdir -p ~</span><span>/.config/sops/age
+</span><span>    </span><span style="color:#bf616a;">age-keygen -o ~</span><span>/.config/sops/age/keys.txt
+</span></code></pre>
+<blockquote>
+<p><strong>💡 Tip:</strong>
+Backup this key securely! Without it, you won't be able to decrypt your secrets.</p>
+</blockquote>
+<p>I have saved this key in multiple secure locations for easy future retrieval.</p>
+<p>We also need the public key for this file, which can be found using the <code>age-keygen</code> command as well</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span>    </span><span style="color:#bf616a;">age-keygen -y ~</span><span>/.config/sops/age/keys.txt
+</span></code></pre>
+<h2 id="sops-configuration">Sops configuration</h2>
+<p>We need to create a <code>.sops.yaml</code> file at the root of our configuration directory to tell sops about how we're planning to use/manage our secrets.</p>
+<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#bf616a;">keys</span><span>:
+</span><span>  - </span><span style="color:#b48ead;">&amp;</span><span>primary </span><span style="color:#a3be8c;">age1yq35g6mmlem0rhr47u6ewh8dctlwp9hj0s0ac60e4hrw9hjzlqms6crf7n
+</span><span style="color:#bf616a;">creation_rules</span><span>:
+</span><span>  - </span><span style="color:#bf616a;">path_regex</span><span>: </span><span style="color:#a3be8c;">secrets/secrets.yaml$
+</span><span>    </span><span style="color:#bf616a;">key_groups</span><span>:
+</span><span>      - </span><span style="color:#bf616a;">age</span><span>:
+</span><span>        - </span><span style="color:#b48ead;">*</span><span style="color:#bf616a;">primary
+</span></code></pre>
+<p>This tells sops a few things:</p>
+<ol>
+<li>The public key (which we got from the last bash command) for our private secret key.</li>
+<li>The path to the actual secrets file when creating secrets and which key (in our case, &quot;primary&quot;) to use to encrypt/decrypt the secrets.</li>
+</ol>
+<h2 id="adding-the-secrets">Adding the secrets</h2>
+<p>Now we can actually add and manage the secrets. To start, you can tell sops to decrypt and provide you a file that you can edit in the <code>$EDITOR</code> of your choice.</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span>    </span><span style="color:#bf616a;">sops --run </span><span>&quot;</span><span style="color:#a3be8c;">sops secrets/secrets.yaml</span><span>&quot;
+</span></code></pre>
+<p>This decrypts (or creates) a <code>secrets/secrets.yaml</code> file and opens it in <code>$EDITOR</code>. You can add, remove and modify secrets in this file and sops will encrypt the file on exit.</p>
+<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span>   </span><span style="color:#bf616a;">claude_key</span><span>: </span><span style="color:#a3be8c;">super-secret-unecrypted-api-key-that-i-want-to-keep-secret
+</span></code></pre>
+<p>Once I exit the <code>$EDITOR</code>, the file looks like this</p>
+<pre data-lang="yaml" style="background-color:#2b303b;color:#c0c5ce;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span>    </span><span style="color:#bf616a;">claude_key</span><span>: </span><span style="color:#a3be8c;">ENC[AES256_GCM,data:PMPcEfsKZCALRdgQf5J12k8IsxlNT7R+zfSgmy3LbVhvQQzpCEVr5Xjh6ABhDRGjsTssXc1Vh7FA03oud40i5YxoYwJ2i2EqrRmpp/QNVAfbPrOzfCcwUxlbgJOUEMVv/1RJFYeqddi+bf1F,iv:lD1bRtBtnBf0ub5mGznVuoxLcFcJhxdp+mGv5TMBcKQ=,tag:TP6YLujPHFmFnK5gWwTREg==,type:str]
+</span><span>    </span><span style="color:#a3be8c;">... other things
+</span></code></pre>
+<p>This file can now be safely committed to the git repository.</p>
+<p>We must tell sops-nix about these files as well. That is done through a few lines of nix configuration.</p>
+<pre data-lang="nix" style="background-color:#2b303b;color:#c0c5ce;" class="language-nix "><code class="language-nix" data-lang="nix"><span>{
+</span><span>    </span><span style="color:#65737e;"># where are the secrets
+</span><span>    </span><span style="color:#d08770;">sops</span><span>.</span><span style="color:#d08770;">defaultSopsFile </span><span>= </span><span style="color:#a3be8c;">../secrets/secrets.yaml</span><span>;
+</span><span>
+</span><span>    </span><span style="color:#65737e;"># the key to decrypt the secrets
+</span><span>    </span><span style="color:#d08770;">sops</span><span>.</span><span style="color:#d08770;">age</span><span>.</span><span style="color:#d08770;">keyFile </span><span>= &quot;</span><span style="color:#a3be8c;">/home/&lt;username&gt;/.config/sops/age/keys.txt</span><span>&quot;;
+</span><span>}
+</span></code></pre>
+<h2 id="accessing-secrets">Accessing secrets</h2>
+<p>The final step is telling sops to allow users to access the secrets. I want my logged in user to see the <code>claude_key</code> secret so that emacs can read it.</p>
+<p>This is done through a few additional lines of nix configuration.</p>
+<pre data-lang="nix" style="background-color:#2b303b;color:#c0c5ce;" class="language-nix "><code class="language-nix" data-lang="nix"><span>    {
+</span><span>       </span><span style="color:#d08770;">sops</span><span>.</span><span style="color:#d08770;">secrets</span><span>.</span><span style="color:#d08770;">claude_key </span><span>= {
+</span><span>         </span><span style="color:#d08770;">owner </span><span>= &quot;</span><span style="font-style:italic;color:#ab7967;">${</span><span style="font-style:italic;color:#bf616a;">user</span><span style="font-style:italic;color:#c0c5ce;">.</span><span style="font-style:italic;color:#bf616a;">username</span><span style="font-style:italic;color:#ab7967;">}</span><span>&quot;;
+</span><span>       };
+</span><span>    }
+</span></code></pre>
+<p>Here, I specify that the owner of the secret is the user. Otherwise, by default, <code>root</code> is the owner, and normal user cannot read the secret.</p>
+<p>Once configured, your secrets are available at <code>/run/secrets/secret_name</code>. For example, to use the Claude API key in Emacs:</p>
+<pre data-lang="elisp" style="background-color:#2b303b;color:#c0c5ce;" class="language-elisp "><code class="language-elisp" data-lang="elisp"><span>(setq gptel-api-key
+</span><span>      (with-temp-buffer
+</span><span>        (insert-file-contents &quot;/run/secrets/claude_key&quot;)
+</span><span>        (string-trim (buffer-string))))
+</span></code></pre>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p>Common issues and solutions:</p>
+<ul>
+<li><strong>Permission denied</strong>: Check the <code>owner</code> setting in your sops configuration</li>
+<li><strong>Decryption failed</strong>: Ensure your age key is correctly configured</li>
+<li><strong>Secret not found</strong>: Verify the path in <code>defaultSopsFile</code></li>
+</ul>
+<h2 id="useful-resources">Useful Resources</h2>
+<ul>
+<li><a href="https://github.com/Mic92/sops-nix">sops-nix GitHub Repository</a></li>
+<li><a href="https://age-encryption.org">Age encryption tool</a></li>
+<li><a href="https://github.com/mozilla/sops">Mozilla sops documentation</a></li>
+</ul>
+<h2 id="conclusion">Conclusion</h2>
+<p>Sops has allowed me to not worry about managing secrets separately from my nixos configuration. When I switch workstations, a simple git pull lets me access all my latest secrets and keys!</p>
+
+
+            </main>
+            <footer>
+                
+
+<p class="taxonomies">
+
+
+<a href="/tags/nixos">#nixos</a>
+
+
+
+
+</p>
+
+  
+  <script src="https://giscus.app/client.js"
+        data-repo="gamedolphin/gamedolphin.github.com"
+        data-repo-id="R_kgDOMgpr2g"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOMgpr2s4ChgX6"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="noborder_gray"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+  </script>
+  
+
+                
+                <nav>
+                    
+                    <a href="https://calculating-cat.pikapod.net/share/uOgHMhM18K3kAuga/www.sandeepnambiar.com">Analytics</a>
+                    
+                </nav>
+                
+            </footer>
+        </div>
+    </body>
+</html>
+        

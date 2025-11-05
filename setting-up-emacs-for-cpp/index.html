@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+        <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
+        <meta content="width=device-width, initial-scale=1" name="viewport"/>
+
+        
+        
+        
+
+        
+
+        
+        
+        
+
+        
+
+        
+        
+        
+
+        <title>Emacs setup for C++</title>
+        
+        <meta name="title" content="Emacs setup for C++">
+        
+        <meta name="description" content="Sandeep Nambiar&#x27;s personal website">
+        <meta name="generator" content="Zola v0.16.1">
+
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://www.sandeepnambiar.com/setting-up-emacs-for-cpp/">
+        <meta property="og:site_name" content="Sandeep Nambiar">
+        <meta property="og:title" content="Emacs setup for C++">
+        <meta property="og:description" content="Sandeep Nambiar&#x27;s personal website">
+        
+
+        
+        
+        <meta property="twitter:card" content="summary_large_image">
+        <meta property="twitter:url" content="https://www.sandeepnambiar.com/setting-up-emacs-for-cpp/">
+        <meta property="twitter:title" content="Emacs setup for C++">
+        <meta property="twitter:description" content="Sandeep Nambiar&#x27;s personal website">
+        
+        
+        
+        <link rel="canonical" href="https://www.sandeepnambiar.com/setting-up-emacs-for-cpp/">
+        
+        <script type="application/ld+json">
+            {
+                "description":"Sandeep Nambiar's personal website",
+                "url":"https://www.sandeepnambiar.com/setting-up-emacs-for-cpp/",
+                "@type":"WebSite",
+                "headline":"Emacs setup for C++",
+                "name":"Emacs setup for C++",
+                
+                "@context":"https://schema.org"
+            }
+        </script>
+        
+        
+        
+
+        <link rel="stylesheet" href="https://www.sandeepnambiar.com/style.css"/>
+        
+<script defer src="https://calculating-cat.pikapod.net/script.js" data-website-id="e274bd34-543a-448b-aead-5e91046e37b0"></script>
+
+    </head>
+    <body theme="auto">
+        <div class="w">
+            <header>
+                
+                
+<p><a href="..">..</a>/setting-up-emacs-for-cpp</p>
+<p class="post-meta"><time datetime="2019-05-13">2019-05-13</time></p>
+<h1>Emacs setup for C++</h1>
+
+            </header>
+            <main class="page-content" aria-label="Content">
+                
+
+
+
+<p>For C++ development, I use a combination of <a href="https://github.com/emacs-lsp/lsp-mode">emacs-lsp</a> along with <a href="https://github.com/MaskRay/ccls">ccls</a>. Emacs-lsp is a client for <a href="https://microsoft.github.io/language-server-protocol/">Language Server Protocol</a> which, in Microsoft's words:-</p>
+<blockquote>
+<p>Adding features like auto complete, go to definition, or documentation on hover for a programming language takes significant effort. Traditionally this work had to be repeated for each development tool, as each tool provides different APIs for implementing the same feature. A Language Server is meant to provide the language-specific smarts and communicate with development tools over a protocol that enables inter-process communication. The idea behind the Language Server Protocol (LSP) is to standardize the protocol for how such servers and development tools communicate. This way, a single Language Server can be re-used in multiple development tools, which in turn can support multiple languages with minimal effort.</p>
+</blockquote>
+<p>ccls is a stand-alone server implementing the Language Server Protocol for C, C++, and Objective-C languages.</p>
+<h2 id="getting-ccls">Getting ccls</h2>
+<p>You can follow the instructions to <a href="https://github.com/MaskRay/ccls/wiki/Build">build</a> and then <a href="https://github.com/MaskRay/ccls/wiki/Install">install</a> ccls. TLDR: Make sure you have all the dependencies, clone ccls repository, download llvm binaries, build with cmake, install with cmake.</p>
+<p>At the end of the process, you should have ccls in your path. If you don't want to install or cannot install ccls, just remember the path to the release binary that you get after the build process.</p>
+<h2 id="emacs-lsp">Emacs-lsp</h2>
+<p>First lets ensure we have emacs-lsp installed. <a href="https://github.com/emacs-lsp/lsp-ui">lsp-ui</a> provides additional ui flair along with flycheck integration. <a href="https://github.com/tigersoldier/company-lsp">company-lsp</a> integrates company with lsp.</p>
+<pre data-lang="el" style="background-color:#2b303b;color:#c0c5ce;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#96b5b4;">use-package</span><span> lsp-mode :commands lsp :ensure </span><span style="color:#d08770;">t</span><span>)
+</span><span>(</span><span style="color:#96b5b4;">use-package</span><span> lsp-ui :commands lsp-ui-mode :ensure </span><span style="color:#d08770;">t</span><span>)
+</span><span>(</span><span style="color:#96b5b4;">use-package</span><span> company-lsp
+</span><span>  :ensure </span><span style="color:#d08770;">t
+</span><span>  :commands company-lsp
+</span><span>  :config (</span><span style="color:#96b5b4;">push</span><span> &#39;company-lsp company-backends)) </span><span style="color:#65737e;">;; add company-lsp as a backend
+</span></code></pre>
+<p>Then we can setup ccls. It uses flymake for its syntax checking. We can disable that to let flycheck do its thing.</p>
+<pre data-lang="el" style="background-color:#2b303b;color:#c0c5ce;" class="language-el "><code class="language-el" data-lang="el"><span>(</span><span style="color:#96b5b4;">use-package</span><span> ccls
+</span><span>  :ensure </span><span style="color:#d08770;">t
+</span><span>  :config
+</span><span>  (</span><span style="color:#96b5b4;">setq</span><span> ccls-executable &quot;</span><span style="color:#a3be8c;">ccls</span><span>&quot;)
+</span><span>  (</span><span style="color:#96b5b4;">setq</span><span> lsp-prefer-flymake </span><span style="color:#d08770;">nil</span><span>)
+</span><span>  (</span><span style="color:#96b5b4;">setq</span><span>-default flycheck-disabled-checkers &#39;(c/c++-clang c/c++-cppcheck c/c++-gcc))
+</span><span>  :hook ((c-mode c++-mode objc-mode) .
+</span><span>         (</span><span style="color:#96b5b4;">lambda </span><span>() (</span><span style="color:#96b5b4;">require</span><span> &#39;ccls) (lsp))))
+</span></code></pre>
+<p>That is it. When you open a new c++ file, ccls should ask you for the root of the project and make sense of how your project is structured more or less on its own. You can also configure a project to help ccls by following the instructions <a href="https://github.com/MaskRay/ccls/wiki/Project-Setup">here</a>.</p>
+<p>Happy Coding!</p>
+
+
+            </main>
+            <footer>
+                
+
+<p class="taxonomies">
+
+
+<a href="/tags/emacs">#emacs</a>
+
+<a href="/tags/c">#c++</a>
+
+
+
+
+</p>
+
+  
+  <script src="https://giscus.app/client.js"
+        data-repo="gamedolphin/gamedolphin.github.com"
+        data-repo-id="R_kgDOMgpr2g"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOMgpr2s4ChgX6"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="noborder_gray"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+  </script>
+  
+
+                
+                <nav>
+                    
+                    <a href="https://calculating-cat.pikapod.net/share/uOgHMhM18K3kAuga/www.sandeepnambiar.com">Analytics</a>
+                    
+                </nav>
+                
+            </footer>
+        </div>
+    </body>
+</html>
+        

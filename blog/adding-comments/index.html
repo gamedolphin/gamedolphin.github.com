@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+        <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
+        <meta content="width=device-width, initial-scale=1" name="viewport"/>
+
+        
+        
+        
+
+        
+
+        
+        
+        
+
+        
+
+        
+        
+        
+
+        <title>Adding comments to a static website</title>
+        
+        <meta name="title" content="Adding comments to a static website">
+        
+        <meta name="description" content="Sandeep Nambiar&#x27;s personal website">
+        <meta name="generator" content="Zola v0.16.1">
+
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://www.sandeepnambiar.com/blog/adding-comments/">
+        <meta property="og:site_name" content="Sandeep Nambiar">
+        <meta property="og:title" content="Adding comments to a static website">
+        <meta property="og:description" content="Sandeep Nambiar&#x27;s personal website">
+        
+
+        
+        
+        <meta property="twitter:card" content="summary_large_image">
+        <meta property="twitter:url" content="https://www.sandeepnambiar.com/blog/adding-comments/">
+        <meta property="twitter:title" content="Adding comments to a static website">
+        <meta property="twitter:description" content="Sandeep Nambiar&#x27;s personal website">
+        
+        
+        
+        <link rel="canonical" href="https://www.sandeepnambiar.com/blog/adding-comments/">
+        
+        <script type="application/ld+json">
+            {
+                "description":"Sandeep Nambiar's personal website",
+                "url":"https://www.sandeepnambiar.com/blog/adding-comments/",
+                "@type":"WebSite",
+                "headline":"Adding comments to a static website",
+                "name":"Adding comments to a static website",
+                
+                "@context":"https://schema.org"
+            }
+        </script>
+        
+        
+        
+
+        <link rel="stylesheet" href="https://www.sandeepnambiar.com/style.css"/>
+        
+<script defer src="https://calculating-cat.pikapod.net/script.js" data-website-id="e274bd34-543a-448b-aead-5e91046e37b0"></script>
+
+    </head>
+    <body theme="auto">
+        <div class="w">
+            <header>
+                
+                
+<p><a href="..">..</a>/adding-comments</p>
+<p class="post-meta"><time datetime="2024-08-09">2024-08-09</time></p>
+<h1>Adding comments to a static website</h1>
+
+            </header>
+            <main class="page-content" aria-label="Content">
+                
+
+
+
+<p>This website is created using <a href="https://www.getzola.org">zola</a> which is a static website generated. Which means that dynamic user generated content (like comments) is going to be hard. </p>
+<p>But I have recently discovered <a href="https://giscus.app/">giscus</a>. It is a comment system powered by github discussions. And since my website is almost completely run on top of github (pages and actions), it makes sense to keep the comments on my posts inside of it. </p>
+<p>After you run through the configuration wizard on the home page and added the giscus app and settings to your repository, you are presented with a handy script tag that you can add to your page. </p>
+<pre data-lang="javascript" style="background-color:#2b303b;color:#c0c5ce;" class="language-javascript "><code class="language-javascript" data-lang="javascript"><span>&lt;</span><span style="color:#bf616a;">script src</span><span>=&quot;</span><span style="color:#a3be8c;">https://giscus.app/client.js</span><span>&quot;
+</span><span>        </span><span style="color:#bf616a;">data</span><span>-</span><span style="color:#bf616a;">repo</span><span>=&quot;</span><span style="color:#a3be8c;">gamedolphin/gamedolphin.github.com</span><span>&quot;
+</span><span>        </span><span style="color:#bf616a;">data</span><span>-</span><span style="color:#bf616a;">repo</span><span>-</span><span style="color:#bf616a;">id</span><span>=&quot;</span><span style="color:#a3be8c;">R_kgDOMgpr2g</span><span>&quot;
+</span><span>        </span><span style="color:#bf616a;">data</span><span>-</span><span style="color:#bf616a;">category</span><span>=&quot;</span><span style="color:#a3be8c;">Announcements</span><span>&quot;
+</span><span>        </span><span style="color:#bf616a;">data</span><span>-</span><span style="color:#bf616a;">category</span><span>-</span><span style="color:#bf616a;">id</span><span>=&quot;</span><span style="color:#a3be8c;">DIC_kwDOMgpr2s4ChgX6</span><span>&quot;
+</span><span>        </span><span style="color:#bf616a;">data</span><span>-</span><span style="color:#bf616a;">mapping</span><span>=&quot;</span><span style="color:#a3be8c;">pathname</span><span>&quot;
+</span><span>        </span><span style="color:#bf616a;">data</span><span>-</span><span style="color:#bf616a;">strict</span><span>=&quot;</span><span style="color:#a3be8c;">0</span><span>&quot;
+</span><span>        </span><span style="color:#bf616a;">data</span><span>-</span><span style="color:#bf616a;">reactions</span><span>-</span><span style="color:#bf616a;">enabled</span><span>=&quot;</span><span style="color:#a3be8c;">1</span><span>&quot;
+</span><span>        </span><span style="color:#bf616a;">data</span><span>-</span><span style="color:#bf616a;">emit</span><span>-</span><span style="color:#bf616a;">metadata</span><span>=&quot;</span><span style="color:#a3be8c;">0</span><span>&quot;
+</span><span>        </span><span style="color:#bf616a;">data</span><span>-</span><span style="color:#bf616a;">input</span><span>-</span><span style="color:#bf616a;">position</span><span>=&quot;</span><span style="color:#a3be8c;">top</span><span>&quot;
+</span><span>        </span><span style="color:#bf616a;">data</span><span>-</span><span style="color:#bf616a;">theme</span><span>=&quot;</span><span style="color:#a3be8c;">noborder_gray</span><span>&quot;
+</span><span>        </span><span style="color:#bf616a;">data</span><span>-</span><span style="color:#bf616a;">lang</span><span>=&quot;</span><span style="color:#a3be8c;">en</span><span>&quot;
+</span><span>        </span><span style="color:#bf616a;">data</span><span>-</span><span style="color:#bf616a;">loading</span><span>=&quot;</span><span style="color:#a3be8c;">lazy</span><span>&quot;
+</span><span>        </span><span style="color:#bf616a;">crossorigin</span><span>=&quot;</span><span style="color:#a3be8c;">anonymous</span><span>&quot;
+</span><span>        </span><span style="color:#bf616a;">async</span><span>&gt;
+</span><span>&lt;/</span><span style="color:#bf616a;">script</span><span>&gt;
+</span></code></pre>
+<h2 id="adding-to-zola">Adding to zola</h2>
+<p>To add this script to all &quot;pages&quot; (not a page index like the <a href="/blog">blog</a>), I can extend the theme's <code>page.html</code> template by creating a new <code>templates/page.html</code>. Zola uses the <a href="https://keats.github.io/tera/docs/">tera</a> templating system and to add a comments section to the footer of a page, I can extend the <code>{{footer}}</code> block.</p>
+<pre data-lang="handlebars" style="background-color:#2b303b;color:#c0c5ce;" class="language-handlebars "><code class="language-handlebars" data-lang="handlebars"><span>{% extends &quot;no-style-please/templates/page.html&quot; %}
+</span><span>
+</span><span>{% block footer %}
+</span><span>{{ </span><span style="color:#bf616a;">super </span><span>}}
+</span><span>  {% if page.extra.comments %}
+</span><span>  &lt;</span><span style="color:#bf616a;">script </span><span style="color:#d08770;">src=</span><span>&quot;</span><span style="color:#a3be8c;">from above</span><span>&quot;&gt;&lt;/</span><span style="color:#bf616a;">script</span><span>&gt;
+</span><span>  {% endif %}
+</span><span>{% endblock footer %}
+</span></code></pre>
+<p>Now if I want to add comments to a post, I can add the following meta data to a page, and have a github discussions powered comments section just below it. </p>
+<pre data-lang="markdown" style="background-color:#2b303b;color:#c0c5ce;" class="language-markdown "><code class="language-markdown" data-lang="markdown"><span style="background-color:#4f5b66;color:#c0c5ce;">---
+</span><span>extra:
+</span><span>  comments: true
+</span><span style="color:#8fa1b3;">---
+</span></code></pre>
+<p>I've added comment sections to a few blog posts already which you can track in this <a href="https://github.com/gamedolphin/gamedolphin.github.com/commit/0f3bb75dd112adec5adcae95e43b6fb979fb1ff7">commit</a>. GG gisqus. If everything works as expected, you would see a comments section just below the tags for this post. You would need to sign in to github before posting ofc. </p>
+
+
+            </main>
+            <footer>
+                
+
+<p class="taxonomies">
+
+
+<a href="/tags/blog">#blog</a>
+
+<a href="/tags/website">#website</a>
+
+
+
+
+</p>
+
+  
+  <script src="https://giscus.app/client.js"
+        data-repo="gamedolphin/gamedolphin.github.com"
+        data-repo-id="R_kgDOMgpr2g"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOMgpr2s4ChgX6"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="noborder_gray"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+  </script>
+  
+
+                
+                <nav>
+                    
+                    <a href="https://calculating-cat.pikapod.net/share/uOgHMhM18K3kAuga/www.sandeepnambiar.com">Analytics</a>
+                    
+                </nav>
+                
+            </footer>
+        </div>
+    </body>
+</html>
+        
